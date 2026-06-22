@@ -6,23 +6,23 @@
   <title>Spring Microservices Recall</title>
   <style>
     :root {
-      color-scheme: light;
-      --page: #f5f7fb;
-      --ink: #17202c;
-      --muted: #637083;
-      --line: #d8e0ea;
-      --panel: #ffffff;
-      --teal: #0f766e;
-      --teal-ink: #064e48;
-      --amber: #b45309;
-      --amber-soft: #fff4df;
-      --red: #b42318;
-      --green: #1b6b35;
-      --blue: #244c8f;
-      --cyan-soft: #e7f6f4;
-      --code: #0b1220;
-      --shadow: 0 20px 50px rgba(24, 32, 42, 0.12);
-      --soft-shadow: 0 10px 26px rgba(24, 32, 42, 0.08);
+      color-scheme: dark;
+      --page: #08111f;
+      --ink: #f4f7fb;
+      --muted: #a8b5c7;
+      --line: #27384c;
+      --panel: #101b2d;
+      --teal: #2dd4bf;
+      --teal-ink: #99f6e4;
+      --amber: #f59e0b;
+      --amber-soft: #2d2110;
+      --red: #fb7185;
+      --green: #4ade80;
+      --blue: #93c5fd;
+      --cyan-soft: #102d34;
+      --code: #020617;
+      --shadow: 0 22px 56px rgba(0, 0, 0, 0.34);
+      --soft-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -34,8 +34,8 @@
       margin: 0;
       min-height: 100vh;
       background:
-        linear-gradient(135deg, rgba(15, 118, 110, 0.09), rgba(36, 76, 143, 0.05) 42%, rgba(180, 83, 9, 0.08)),
-        linear-gradient(180deg, #fbfcff, var(--page)),
+        linear-gradient(135deg, rgba(45, 212, 191, 0.18), rgba(245, 158, 11, 0.08) 42%, rgba(147, 197, 253, 0.12)),
+        linear-gradient(180deg, #0b1728, var(--page)),
         var(--page);
       color: var(--ink);
     }
@@ -64,7 +64,7 @@
       border: 1px solid rgba(216, 224, 234, 0.92);
       border-radius: 8px;
       background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(231, 246, 244, 0.78)),
+        linear-gradient(135deg, rgba(16, 27, 45, 0.96), rgba(16, 45, 52, 0.78)),
         var(--panel);
       box-shadow: var(--soft-shadow);
     }
@@ -95,7 +95,7 @@
       justify-content: center;
       min-height: 34px;
       padding: 6px 10px;
-      border: 1px solid var(--line);
+      border: 1px solid #1e2f45;
       border-radius: 999px;
       background: var(--code);
       border-color: var(--code);
@@ -114,10 +114,10 @@
     .stat {
       min-width: 0;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(16, 27, 45, 0.88);
       border-radius: 8px;
       padding: 9px;
-      box-shadow: 0 6px 16px rgba(24, 32, 42, 0.05);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
     }
 
     .stat strong {
@@ -150,7 +150,7 @@
       background: var(--panel);
       color: var(--ink);
       padding: 8px 10px;
-      box-shadow: 0 6px 14px rgba(24, 32, 42, 0.05);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
     }
 
     .action {
@@ -168,7 +168,7 @@
     .action.primary {
       background: var(--teal);
       border-color: var(--teal);
-      color: white;
+      color: #04201c;
     }
 
     .action.warning {
@@ -176,7 +176,7 @@
     }
 
     .quiz {
-      background: rgba(255, 255, 255, 0.97);
+      background: rgba(16, 27, 45, 0.97);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
@@ -197,24 +197,24 @@
       min-height: 28px;
       border-radius: 999px;
       padding: 5px 9px;
-      background: #eef5f2;
+      background: rgba(45, 212, 191, 0.12);
       color: var(--teal-ink);
       font-size: 0.78rem;
       font-weight: 750;
     }
 
     .tag.level-easy {
-      background: #e9f7ef;
+      background: rgba(74, 222, 128, 0.14);
       color: var(--green);
     }
 
     .tag.level-medium {
-      background: #fff3df;
+      background: rgba(245, 158, 11, 0.16);
       color: var(--amber);
     }
 
     .tag.level-hard {
-      background: #eef3ff;
+      background: rgba(147, 197, 253, 0.14);
       color: var(--blue);
     }
 
@@ -245,13 +245,13 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       overflow: hidden;
-      background: #fbfdff;
+      background: #0c1727;
     }
 
     .contextPanel {
       padding: 12px;
       background: var(--amber-soft);
-      border-color: #f0d6ad;
+      border-color: #7c4f12;
     }
 
     .contextPanel span,
@@ -275,7 +275,7 @@
     .codeHeader {
       margin: 0;
       padding: 10px 12px;
-      background: #152133;
+      background: #0f1b2d;
       color: #dbeafe;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -285,7 +285,7 @@
       padding: 14px;
       max-width: 100%;
       overflow-x: auto;
-      background: #0b1220;
+      background: #020617;
       color: #e5edf7;
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       font-size: 0.82rem;
@@ -301,7 +301,7 @@
     .theoryNote {
       padding: 12px;
       background: var(--cyan-soft);
-      border-color: #bfe6df;
+      border-color: #1f6f69;
     }
 
     .source {
@@ -322,15 +322,28 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fbfdff;
+      background: #0d1828;
       color: var(--ink);
       padding: 12px;
       text-align: left;
       line-height: 1.35;
       font-weight: 680;
       overflow-wrap: anywhere;
-      box-shadow: 0 8px 16px rgba(24, 32, 42, 0.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
       transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .option pre {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .optionLabel {
+      display: block;
     }
 
     .option:hover,
@@ -343,13 +356,13 @@
 
     .option.correct {
       border-color: rgba(27, 107, 53, 0.45);
-      background: #edf8f0;
+      background: rgba(74, 222, 128, 0.12);
       color: var(--green);
     }
 
     .option.wrong {
       border-color: rgba(180, 35, 24, 0.45);
-      background: #fff0ee;
+      background: rgba(251, 113, 133, 0.12);
       color: var(--red);
     }
 
@@ -359,8 +372,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 12px;
-      background: #fbfdff;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      background: #0d1828;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
     }
 
     .feedback strong {
@@ -372,6 +385,7 @@
       margin: 0;
       color: var(--muted);
       line-height: 1.45;
+      white-space: pre-line;
     }
 
     .feedback p + p {
@@ -388,7 +402,7 @@
     .progress {
       height: 10px;
       border-radius: 999px;
-      background: #e8ece8;
+      background: #1b2b3e;
       overflow: hidden;
       margin-top: 12px;
     }
@@ -411,7 +425,7 @@
       min-width: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(16, 27, 45, 0.82);
       padding: 9px;
     }
 
@@ -1223,6 +1237,183 @@
       }
     };
 
+    const IMPLEMENTATION_KINDS = [
+      "yaml-property",
+      "code-correct",
+      "annotation-correct",
+      "output-correct"
+    ];
+
+    const YAML_DRILLS = {
+      "Spring Cloud BOM": [
+        "<spring-cloud.version>2023.0.3</spring-cloud.version>",
+        "<spring.cloud.version>2023.0.3</spring.cloud.version>",
+        "<spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>",
+        "<cloud.spring.version>2023.0.3</cloud.spring.version>"
+      ],
+      "Eureka Server": [
+        "eureka:\n  client:\n    register-with-eureka: false\n    fetch-registry: false",
+        "eureka:\n  client:\n    register-with-eureka: true\n    fetch-registry: true",
+        "eureka:\n  server:\n    register-with-eureka: false\n    fetch-registry: false",
+        "spring:\n  eureka:\n    register-with-eureka: false\n    fetch-registry: false"
+      ],
+      "Eureka Client": [
+        "eureka:\n  client:\n    service-url:\n      defaultZone: http://localhost:8761/eureka\n    register-with-eureka: true\n    fetch-registry: true",
+        "eureka:\n  client:\n    serviceUrl:\n      default-zone: http://localhost:8761/eureka",
+        "eureka:\n  server:\n    defaultZone: http://localhost:8761/eureka",
+        "spring:\n  cloud:\n    eureka:\n      url: http://localhost:8761/eureka"
+      ],
+      "API Gateway": [
+        "spring:\n  cloud:\n    gateway:\n      routes:\n        - id: employee-service-route\n          uri: lb://employee-service\n          predicates:\n            - Path=/employees/**\n          filters:\n            - StripPrefix=1",
+        "spring:\n  cloud:\n    gateway:\n      route:\n        id: employee-service-route\n        url: lb://employee-service",
+        "gateway:\n  routes:\n    employee-service:\n      path: /employees/**\n      service: employee-service",
+        "spring:\n  cloud:\n    routes:\n      - name: employee-service-route\n        uri: http://employee-service"
+      ],
+      "Config Server": [
+        "spring:\n  cloud:\n    config:\n      server:\n        git:\n          uri: https://github.com/your-org/config-repo.git",
+        "spring:\n  config:\n    server:\n      git-url: https://github.com/your-org/config-repo.git",
+        "config:\n  server:\n    repository: https://github.com/your-org/config-repo.git",
+        "spring:\n  cloud:\n    git:\n      config-uri: https://github.com/your-org/config-repo.git"
+      ],
+      "Config Client": [
+        "spring:\n  config:\n    import: optional:configserver:http://localhost:8888",
+        "spring:\n  cloud:\n    config:\n      import: http://localhost:8888",
+        "config:\n  server:\n    import: optional:http://localhost:8888",
+        "spring:\n  configserver:\n    url: http://localhost:8888"
+      ],
+      "RestClient LoadBalancer": [
+        "spring:\n  application:\n    name: order-service\neureka:\n  client:\n    service-url:\n      defaultZone: http://localhost:8761/eureka",
+        "spring:\n  application:\n    service-name: order-service\neureka:\n  server:\n    url: http://localhost:8761/eureka",
+        "restclient:\n  loadbalanced: true\n  eureka-url: http://localhost:8761/eureka",
+        "spring:\n  cloud:\n    restclient:\n      service-url: http://employee-service"
+      ],
+      "OpenFeign": [
+        "spring:\n  application:\n    name: order-service\neureka:\n  client:\n    service-url:\n      defaultZone: http://localhost:8761/eureka",
+        "feign:\n  client:\n    name: order-service\n    eureka-url: http://localhost:8761/eureka",
+        "spring:\n  cloud:\n    openfeign:\n      service-name: employee-service",
+        "spring:\n  application:\n    name: employee-client\n  feign:\n    path: /api/v1/employees"
+      ],
+      "Resilience4j Patterns": [
+        "resilience4j:\n  circuitbreaker:\n    instances:\n      employeeService:\n        failure-rate-threshold: 50",
+        "resilience4j:\n  circuit-breaker:\n    employeeService:\n      failure-rate-threshold: 50",
+        "resilience:\n  circuitbreaker:\n    instances:\n      employeeService:\n        threshold: 50",
+        "resilience4j:\n  retry:\n    employee-service:\n      failure-rate-threshold: 50"
+      ],
+      "Resilience4j Config": [
+        "resilience4j:\n  circuitbreaker:\n    instances:\n      employeeService:\n        sliding-window-size: 10\n        minimum-number-of-calls: 5",
+        "resilience4j:\n  circuitBreaker:\n    instance:\n      employeeService:\n        slidingWindowSize: 10",
+        "resilience4j:\n  circuitbreaker:\n    services:\n      employee-service:\n        sliding-window-size: 10",
+        "circuitbreaker:\n  resilience4j:\n    employeeService:\n      minimum-number-of-calls: 5"
+      ],
+      "Resilience Order": [
+        "resilience4j:\n  retry:\n    instances:\n      employeeService:\n        max-attempts: 3\n        wait-duration: 500ms",
+        "resilience4j:\n  retries:\n    employeeService:\n      attempts: 3",
+        "retry:\n  resilience4j:\n    employeeService:\n      max-attempts: 3",
+        "resilience4j:\n  circuitbreaker:\n    retry:\n      max-attempts: 3"
+      ],
+      "TimeLimiter": [
+        "resilience4j:\n  timelimiter:\n    instances:\n      employeeService:\n        timeout-duration: 2s\n        cancel-running-future: true",
+        "resilience4j:\n  timeLimiter:\n    employeeService:\n      timeout: 2s",
+        "timelimiter:\n  resilience4j:\n    instances:\n      employeeService:\n        timeout-duration: 2s",
+        "resilience4j:\n  timeout:\n    instances:\n      employeeService:\n        duration: 2s"
+      ],
+      "Actuator": [
+        "management:\n  endpoints:\n    web:\n      exposure:\n        include: health,info,metrics,prometheus,circuitbreakers,retries",
+        "management:\n  endpoint:\n    web:\n      exposed: health,info,metrics",
+        "actuator:\n  endpoints:\n    include: health,metrics",
+        "spring:\n  actuator:\n    exposure:\n      include: all"
+      ],
+      "Startup Flow": [
+        "startup:\n  order:\n    - config-server\n    - eureka-server\n    - microservices\n    - api-gateway",
+        "startup:\n  order:\n    - api-gateway\n    - microservices\n    - eureka-server\n    - config-server",
+        "startup:\n  order:\n    - eureka-client\n    - api-gateway\n    - config-server",
+        "startup:\n  order:\n    - actuator\n    - database\n    - gateway"
+      ],
+      "Full Request Flow": [
+        "flow:\n  - client\n  - api-gateway\n  - eureka-discovery\n  - employee-service\n  - department-service",
+        "flow:\n  - client\n  - database\n  - api-gateway\n  - eureka-discovery",
+        "flow:\n  - eureka-discovery\n  - client\n  - employee-service\n  - api-gateway",
+        "flow:\n  - actuator\n  - api-gateway\n  - employee-database\n  - client"
+      ],
+      "Project Structure": [
+        "microservices-demo:\n  - eureka-server\n  - config-server\n  - api-gateway\n  - employee-service\n  - department-service\n  - order-service",
+        "microservices-demo:\n  - app\n  - shared-controller\n  - shared-database",
+        "microservices-demo:\n  - gateway-eureka-config-service\n  - employee-department-order-service",
+        "microservices-demo:\n  - client\n  - database\n  - actuator"
+      ],
+      "Common Mistakes": [
+        "@FeignClient(name = \"employee-service\", path = \"/api/v1/employees\")\ninterface EmployeeClient {\n  @PostMapping\n  EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request);\n}",
+        "@FeignClient(name = \"employee-service\", path = \"/api/v1/employees\")\ninterface EmployeeClient {\n  @PostMapping(\"/employees\")\n  EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request);\n}",
+        "@FeignClient(name = \"employee_service\", path = \"/api/v1/employees\")\ninterface EmployeeClient {\n  @PostMapping(\"/api/v1/employees\")\n  EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request);\n}",
+        "@FeignClient(url = \"localhost:8081\", path = \"/employees\")\ninterface EmployeeClient {\n  @PostMapping(\"/employees\")\n  EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request);\n}"
+      ]
+    };
+
+    const DECLARATION_DRILLS = {
+      "Spring Cloud BOM": [
+        "<dependencyManagement>\n  <dependencies>\n    <dependency>\n      <groupId>org.springframework.cloud</groupId>\n      <artifactId>spring-cloud-dependencies</artifactId>\n      <version>${spring-cloud.version}</version>\n      <type>pom</type>\n      <scope>import</scope>\n    </dependency>\n  </dependencies>\n</dependencyManagement>",
+        "<dependencies>\n  <dependency>\n    <artifactId>spring-cloud-dependencies</artifactId>\n    <scope>runtime</scope>\n  </dependency>\n</dependencies>",
+        "<dependencyManagement>\n  <dependency>\n    <artifactId>spring-cloud-starter</artifactId>\n    <type>jar</type>\n  </dependency>\n</dependencyManagement>",
+        "<springCloudManagement>\n  <version>${spring-cloud.version}</version>\n</springCloudManagement>"
+      ],
+      "Eureka Server": ["@EnableEurekaServer", "@EnableEurekaClient", "@EnableDiscoveryServer", "@SpringCloudRegistry"],
+      "Eureka Client": [
+        "<dependency>\n  <groupId>org.springframework.cloud</groupId>\n  <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>\n</dependency>",
+        "<dependency>\n  <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>\n</dependency>",
+        "@EnableEurekaServer",
+        "@EnableConfigServer"
+      ],
+      "API Gateway": [
+        "<dependency>\n  <groupId>org.springframework.cloud</groupId>\n  <artifactId>spring-cloud-starter-gateway</artifactId>\n</dependency>",
+        "<dependency>\n  <artifactId>spring-boot-starter-webmvc-gateway</artifactId>\n</dependency>",
+        "@EnableGatewayServer",
+        "@EnableEurekaServer"
+      ],
+      "Config Server": ["@EnableConfigServer", "@EnableEurekaServer", "@EnableFeignClients", "@LoadBalanced"],
+      "Config Client": [
+        "<dependency>\n  <groupId>org.springframework.cloud</groupId>\n  <artifactId>spring-cloud-starter-config</artifactId>\n</dependency>",
+        "<dependency>\n  <artifactId>spring-cloud-config-server</artifactId>\n</dependency>",
+        "@EnableConfigServer",
+        "@FeignClient(name = \"config-server\")"
+      ],
+      "RestClient LoadBalancer": ["@LoadBalanced\n@Bean\nRestClient.Builder restClientBuilder() {\n  return RestClient.builder();\n}", "@LoadBalanced\nRestClient restClient() {\n  return RestClient.create();\n}", "@EnableFeignClients\nRestClient.Builder restClientBuilder() {}", "@EnableEurekaServer\nRestClient restClient() {}"],
+      "OpenFeign": ["@EnableFeignClients", "@EnableFeignClient", "@FeignEnableClients", "@LoadBalanced"],
+      "Resilience4j Patterns": ["@CircuitBreaker(name = \"employeeService\", fallbackMethod = \"employeeFallback\")", "@CircuitBreaker(id = \"employeeService\", fallback = \"employeeFallback\")", "@Retry(service = \"employeeService\")", "@Fallback(name = \"employeeFallback\")"],
+      "Resilience4j Config": ["@CircuitBreaker(name = \"employeeService\")", "@CircuitBreaker(name = \"userService\")", "@CircuitBreaker(instance = \"employeeService\")", "@CircuitBreaker(serviceName = \"employee-service\")"],
+      "Resilience Order": ["@CircuitBreaker(name = \"employeeService\", fallbackMethod = \"fallback\")\n@Retry(name = \"employeeService\", fallbackMethod = \"fallback\")", "@Retry(name = \"employeeService\")\n@CircuitBreaker(name = \"userService\")", "@Fallback\n@Retry(maxAttempts = 3)", "@RateLimiter\n@RetryForever"],
+      "TimeLimiter": ["@TimeLimiter(name = \"employeeService\", fallbackMethod = \"employeeTimeoutFallback\")", "@TimeoutLimiter(name = \"employeeService\")", "@TimeLimiter(service = \"employeeService\")", "@CircuitBreaker(timeout = \"2s\")"],
+      "Actuator": [
+        "<dependency>\n  <groupId>org.springframework.boot</groupId>\n  <artifactId>spring-boot-starter-actuator</artifactId>\n</dependency>",
+        "<dependency>\n  <artifactId>spring-cloud-starter-actuator-server</artifactId>\n</dependency>",
+        "@EnableActuatorServer",
+        "@EnableMetricsGateway"
+      ],
+      "Startup Flow": ["Config Server -> Eureka Server -> Microservices -> API Gateway", "API Gateway -> Config Server -> Eureka Server -> Microservices", "Microservices -> API Gateway -> Eureka Server -> Config Server", "Actuator -> Gateway -> Database -> Eureka"],
+      "Full Request Flow": ["Client -> API Gateway -> Eureka Discovery -> Employee Service", "Client -> Database -> Employee Service -> Gateway", "Eureka Discovery -> Client -> API Gateway", "Actuator -> Department Service -> Client"],
+      "Project Structure": ["eureka-server/\nconfig-server/\napi-gateway/\nemployee-service/\ndepartment-service/\norder-service/", "app/\ncontrollers/\nall-services/", "gateway-eureka-config-service/\nbusiness-service/", "database/\nactuator/\nclient/"],
+      "Common Mistakes": ["@PostMapping", "@PostMapping(\"/employees\")", "@PostMapping(\"/api/v1/employees\")", "@PostMapping(\"employee-service\")"]
+    };
+
+    const OUTPUT_DRILLS = {
+      "Spring Cloud BOM": ["Spring Cloud starters resolve to compatible versions from the imported BOM.", "Eureka starts automatically without the server starter.", "Gateway routes are generated from dependencyManagement.", "Actuator endpoints are exposed by the BOM alone."],
+      "Eureka Server": ["The registry runs on port 8761 and does not register itself in the simple setup.", "The registry registers itself as employee-service.", "The server fetches routes from API Gateway.", "The server stores employee records."],
+      "Eureka Client": ["The service registers as employee-service and can be discovered by that logical name.", "The service is discovered as localhost:8081 only.", "The service name is ignored because prefer-ip-address is true.", "The client becomes a Config Server."],
+      "API Gateway": ["/employees/api/v1/employees/1 is forwarded as /api/v1/employees/1 to lb://employee-service.", "/employees/api/v1/employees/1 is forwarded unchanged to the database.", "StripPrefix=1 changes the service name to employees.", "lb://employee-service sends traffic to the Eureka dashboard."],
+      "Config Server": ["A client named employee-service can load employee-service.yml from the config repository.", "The Config Server registers employee records in Eureka.", "GitHub passwords are copied into every service.", "The Gateway reads route predicates from the database."],
+      "Config Client": ["employee-service asks Config Server for employee-service.yml and profile-specific variants.", "Config import renames the service in Eureka.", "optional:configserver disables Config Server permanently.", "Config Client creates Feign implementations."],
+      "RestClient LoadBalancer": ["http://employee-service is resolved through discovery/load balancing instead of public DNS.", "RestClient sends the call to the local database.", "The host employee-service must exist in public DNS.", "ParameterizedTypeReference disables load balancing."],
+      "OpenFeign": ["@FeignClient path plus @PostMapping builds /api/v1/employees for createEmployee.", "@PostMapping(\"/employees\") builds the same URL as @PostMapping.", "Feign ignores @RequestHeader parameters.", "Feign requires manual restClient.get() calls inside the interface."],
+      "Resilience4j Patterns": ["After protected calls fail according to policy, the fallback method can return a safe EmployeeResponse.", "CircuitBreaker retries forever by default.", "Bulkhead changes the Eureka service name.", "RateLimiter stores config files in Git."],
+      "Resilience4j Config": ["The YAML instance employeeService matches @CircuitBreaker(name = \"employeeService\").", "YAML userService config applies to employeeService annotations.", "minimum-number-of-calls means max retry attempts.", "ignore-exceptions are counted as infrastructure failures."],
+      "Resilience Order": ["With max-attempts: 3, failed calls can be attempted three times before fallback.", "Retry attempts forever until the service recovers.", "Fallback is called before the first remote call.", "RateLimiter is checked only after the response returns."],
+      "TimeLimiter": ["A CompletableFuture method can complete with employeeTimeoutFallback after timeout.", "A synchronous blocking call is fully protected without HTTP timeouts.", "The fallback may return EmployeeResponse when the method returns CompletableFuture<EmployeeResponse>.", "TimeLimiter replaces Retry and CircuitBreaker annotations."],
+      "Actuator": ["/actuator/health, /actuator/metrics, /actuator/circuitbreakers, and /actuator/retries can be exposed.", "/actuator/users lists application users by default.", "Actuator changes Gateway route predicates.", "show-details configures Eureka registration names."],
+      "Startup Flow": ["Config Server starts first, Eureka second, then services register, then Gateway routes.", "Gateway starts first and creates Config Server.", "Actuator must start before every service.", "LoadBalancer chooses instances before services register."],
+      "Full Request Flow": ["Client -> API Gateway -> Eureka Discovery -> Employee Service -> dependencies/metrics.", "Client -> Employee Database -> API Gateway -> Eureka.", "Department Service -> Browser -> Config Server -> Employee Service.", "Actuator -> Client -> Database -> Gateway."],
+      "Project Structure": ["The demo keeps discovery, config, gateway, and business services in separate modules.", "All patterns are implemented inside one shared controller.", "The database folder replaces service modules.", "Gateway and Eureka should be embedded in every business service."],
+      "Common Mistakes": ["@FeignClient path /api/v1/employees plus @PostMapping(\"/employees\") produces /api/v1/employees/employees.", "Repeating /employees is harmless because Feign removes duplicates.", "Annotation names do not need to match YAML instance names.", "localhost URLs automatically load balance across instances."]
+    };
+
     function stableHash(value) {
       let hash = 0;
       for (let index = 0; index < value.length; index += 1) {
@@ -1241,15 +1432,78 @@
       return values.slice(offset).concat(values.slice(0, offset));
     }
 
-    function makeChoices(correct, topic, seed) {
-      const topicInfo = TOPIC_CATALOG.find(item => item.topic === topic);
-      const pool = unique([...(topicInfo ? topicInfo.traps : []), ...DISTRACTOR_BANK])
-        .filter(item => item !== correct);
-      const wrong = rotate(pool, stableHash(seed)).slice(0, 3);
-      return [
-        { text: correct, correct: true },
-        ...wrong.map(text => ({ text, correct: false }))
+    function withChoiceFormat(values, format) {
+      return values.map((text, index) => ({ text, correct: index === 0, format }));
+    }
+
+    function mutateCodeSnippet(snippet, seed) {
+      const variants = [
+        snippet
+          .replace(/employee-service/g, "employee_service")
+          .replace(/employeeService/g, "userService")
+          .replace(/defaultZone/g, "default-zone"),
+        snippet
+          .replace(/lb:\/\//g, "http://localhost:8081/")
+          .replace(/StripPrefix=1/g, "StripPrefix=0")
+          .replace(/register-with-eureka: false/g, "register-with-eureka: true"),
+        snippet
+          .replace(/@LoadBalanced\\n/g, "")
+          .replace(/@Enable/g, "@Disable")
+          .replace(/fetch-registry: true/g, "fetch-registry: false")
       ];
+      return rotate(unique(variants), stableHash(seed)).slice(0, 3);
+    }
+
+    function fourChoices(values, fallbackValues) {
+      return unique([...values, ...fallbackValues]).slice(0, 4);
+    }
+
+    function makeImplementationDrill(kind, topic, card, context, seed) {
+      const yamlChoices = YAML_DRILLS[topic] || YAML_DRILLS["Common Mistakes"];
+      const declarationChoices = DECLARATION_DRILLS[topic] || DECLARATION_DRILLS["Common Mistakes"];
+      const outputChoices = OUTPUT_DRILLS[topic] || OUTPUT_DRILLS["Common Mistakes"];
+      const codeChoices = fourChoices(
+        [context.snippet, ...mutateCodeSnippet(context.snippet, seed)],
+        [
+          `${context.snippet}\n// Wrong: service name/path/config does not match the reference.`,
+          "spring:\n  cloud:\n    service:\n      url: http://localhost:8081\n# Wrong: bypasses discovery and reference config shape.",
+          "@EnableEurekaServer\nclass BusinessServiceApplication {}\n// Wrong: enables the wrong infrastructure role."
+        ]
+      );
+
+      if (kind === "yaml-property") {
+        return {
+          kind,
+          question: `Which YAML property/config name is correct for ${card.focus}?`,
+          choices: withChoiceFormat(yamlChoices, "code"),
+          explanationLabel: "YAML/config detail"
+        };
+      }
+
+      if (kind === "code-correct") {
+        return {
+          kind,
+          question: `Which code is correct for implementing ${card.focus}?`,
+          choices: withChoiceFormat(codeChoices, "code"),
+          explanationLabel: "Correct code shape"
+        };
+      }
+
+      if (kind === "annotation-correct") {
+        return {
+          kind,
+          question: `Which annotation or declaration is correct for ${card.focus}?`,
+          choices: withChoiceFormat(declarationChoices, "code"),
+          explanationLabel: "Annotation/declaration detail"
+        };
+      }
+
+      return {
+        kind,
+        question: `Which output/result is correct for this ${topic} implementation?`,
+        choices: withChoiceFormat(outputChoices, "text"),
+        explanationLabel: "Runtime result"
+      };
     }
 
     function practicalContext(topic, focus) {
@@ -1265,9 +1519,10 @@
       };
     }
 
-    function explainDeeply(card, topic, correct, context) {
+    function explainDeeply(card, topic, correct, context, drill) {
       return [
         `Correct answer: ${correct}`,
+        `Question type: ${drill.explanationLabel}.`,
         `Why this is correct: ${card.easy}`,
         `How to read the code/config: ${card.medium}`,
         `Real project impact: ${card.hard}`,
@@ -1278,24 +1533,29 @@
 
     function buildQuestionBank() {
       const questions = [];
+      let sequence = 0;
       TOPIC_CATALOG.forEach(topicInfo => {
         const selectedCards = topicInfo.cards.slice(0, TOPIC_CARD_LIMITS[topicInfo.topic] || topicInfo.cards.length);
         selectedCards.forEach((card, cardIndex) => {
           Object.entries(LEVELS).forEach(([difficulty, level]) => {
             const id = `${topicInfo.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${cardIndex + 1}-${difficulty}`;
-            const correct = level.answer(card);
             const context = practicalContext(topicInfo.topic, card.focus);
+            const kind = IMPLEMENTATION_KINDS[sequence % IMPLEMENTATION_KINDS.length];
+            const drill = makeImplementationDrill(kind, topicInfo.topic, card, context, id);
+            const correct = drill.choices.find(choice => choice.correct).text;
             questions.push({
               id,
               topic: topicInfo.topic,
               difficulty,
+              kind,
               focus: card.focus,
-              question: level.question(topicInfo.topic, card.focus, context),
+              question: drill.question,
               context,
-              choices: makeChoices(correct, topicInfo.topic, id),
-              explanation: explainDeeply(card, topicInfo.topic, correct, context),
+              choices: drill.choices,
+              explanation: explainDeeply(card, topicInfo.topic, correct, context, drill),
               source: topicInfo.source
             });
+            sequence += 1;
           });
         });
       });
@@ -1411,7 +1671,8 @@
         const button = document.createElement("button");
         button.className = "option";
         button.type = "button";
-        button.textContent = choice.text;
+        button.dataset.correct = String(choice.correct);
+        button.innerHTML = renderChoiceContent(choice);
         button.addEventListener("click", () => answer(choice, button));
         dom.options.appendChild(button);
       });
@@ -1449,6 +1710,13 @@
       `;
     }
 
+    function renderChoiceContent(choice) {
+      if (choice.format === "code") {
+        return `<pre><code>${escapeHtml(choice.text)}</code></pre>`;
+      }
+      return `<span class="optionLabel">${escapeHtml(choice.text)}</span>`;
+    }
+
     function renderFeedback(title, explanation) {
       const paragraphs = explanation
         .split("\n\n")
@@ -1474,8 +1742,7 @@
       locked = true;
       const optionButtons = [...dom.options.querySelectorAll(".option")];
       optionButtons.forEach(button => {
-        const matchingChoice = currentQuestion.choices.find(item => item.text === button.textContent);
-        if (matchingChoice && matchingChoice.correct) button.classList.add("correct");
+        if (button.dataset.correct === "true") button.classList.add("correct");
         button.disabled = true;
       });
       state.answered += 1;

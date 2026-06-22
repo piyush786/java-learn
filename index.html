@@ -1,0 +1,1176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spring Microservices Recall</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f7f7f4;
+      --ink: #18202a;
+      --muted: #607080;
+      --line: #d9ded8;
+      --panel: #ffffff;
+      --teal: #0f766e;
+      --teal-ink: #064e48;
+      --amber: #b45309;
+      --red: #b42318;
+      --green: #1b6b35;
+      --blue: #244c8f;
+      --shadow: 0 18px 42px rgba(31, 41, 55, 0.12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(15, 118, 110, 0.07), rgba(180, 83, 9, 0.04) 42%, transparent 72%),
+        var(--page);
+      color: var(--ink);
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(100%, 920px);
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 10px 0 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.15rem, 3vw, 1.65rem);
+      letter-spacing: 0;
+      line-height: 1.18;
+    }
+
+    .subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--teal-ink);
+      font-size: 0.82rem;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat {
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      border-radius: 8px;
+      padding: 9px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.15;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 4px 0 12px;
+    }
+
+    .control,
+    .action {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 8px 10px;
+    }
+
+    .action {
+      font-weight: 750;
+    }
+
+    .action.primary {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: white;
+    }
+
+    .action.warning {
+      color: var(--amber);
+    }
+
+    .quiz {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #eef5f2;
+      color: var(--teal-ink);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .tag.level-easy {
+      background: #e9f7ef;
+      color: var(--green);
+    }
+
+    .tag.level-medium {
+      background: #fff3df;
+      color: var(--amber);
+    }
+
+    .tag.level-hard {
+      background: #eef3ff;
+      color: var(--blue);
+    }
+
+    .question {
+      margin: 0;
+      font-size: clamp(1.25rem, 4vw, 2rem);
+      line-height: 1.23;
+      letter-spacing: 0;
+    }
+
+    .source {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .option {
+      min-height: 58px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+      color: var(--ink);
+      padding: 12px;
+      text-align: left;
+      line-height: 1.35;
+      font-weight: 680;
+      overflow-wrap: anywhere;
+    }
+
+    .option:hover,
+    .option:focus-visible {
+      border-color: var(--teal);
+      outline: 3px solid rgba(15, 118, 110, 0.16);
+    }
+
+    .option.correct {
+      border-color: rgba(27, 107, 53, 0.45);
+      background: #edf8f0;
+      color: var(--green);
+    }
+
+    .option.wrong {
+      border-color: rgba(180, 35, 24, 0.45);
+      background: #fff0ee;
+      color: var(--red);
+    }
+
+    .feedback {
+      min-height: 120px;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfb;
+    }
+
+    .feedback strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .feedback p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .bottom-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      background: #e8ece8;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--amber));
+      transition: width 180ms ease;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .topic-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 9px;
+    }
+
+    .topic-card b {
+      display: block;
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .topic-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (min-width: 720px) {
+      .app {
+        padding: 24px;
+      }
+
+      .topbar {
+        grid-template-columns: minmax(0, 1fr) 430px;
+        align-items: start;
+      }
+
+      .toolbar {
+        grid-template-columns: 1.3fr 1fr 1fr 1fr;
+      }
+
+      .quiz {
+        padding: 22px;
+      }
+
+      .options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .topic-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 420px) {
+      .app {
+        padding: 10px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toolbar,
+      .bottom-actions,
+      .topic-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .brand {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="topbar" aria-label="Study overview">
+      <div>
+        <div class="brand">
+          <div>
+            <h1>Spring Microservices Recall</h1>
+            <p class="subtitle">Random MCQs from easy recall to hard project scenarios.</p>
+          </div>
+          <span class="pill" id="bankSize">450 questions</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong id="answeredStat">0</strong><span>Answered</span></div>
+        <div class="stat"><strong id="scoreStat">0%</strong><span>Accuracy</span></div>
+        <div class="stat"><strong id="streakStat">0</strong><span>Streak</span></div>
+        <div class="stat"><strong id="missedStat">0</strong><span>Review</span></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Quiz controls">
+      <select class="control" id="topicFilter" aria-label="Topic filter"></select>
+      <select class="control" id="difficultyFilter" aria-label="Difficulty filter">
+        <option value="all">All levels</option>
+        <option value="easy">Easy only</option>
+        <option value="medium">Medium only</option>
+        <option value="hard">Hard only</option>
+      </select>
+      <button class="action" id="reviewButton" type="button">Review missed</button>
+      <button class="action warning" id="resetButton" type="button">Reset</button>
+    </section>
+
+    <section class="quiz" aria-live="polite">
+      <div class="meta">
+        <span class="tag" id="topicTag">Topic</span>
+        <span class="tag" id="difficultyTag">Level</span>
+        <span class="tag" id="queueTag">Queue</span>
+      </div>
+      <h2 class="question" id="questionText">Loading question...</h2>
+      <p class="source" id="sourceText"></p>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback">
+        <strong>Choose one option.</strong>
+        <p>The app will explain the answer and move you to another random question.</p>
+      </div>
+      <div class="bottom-actions">
+        <button class="action primary" id="nextButton" type="button">Next question</button>
+        <button class="action" id="normalModeButton" type="button">All questions</button>
+      </div>
+      <div class="progress" aria-label="Session progress">
+        <div class="bar" id="progressBar"></div>
+      </div>
+    </section>
+
+    <section class="topic-grid" id="topicGrid" aria-label="Topic progress"></section>
+  </main>
+
+  <script>
+    const DISTRACTOR_BANK = [
+      "Hardcode each downstream service URL directly in every controller.",
+      "Disable service discovery and manually edit URLs whenever an instance changes.",
+      "Put every microservice on the same port and let clients guess the target.",
+      "Use the database name as the HTTP service name.",
+      "Expose every internal service directly to browser clients.",
+      "Retry indefinitely until the downstream service recovers.",
+      "Treat business validation errors as infrastructure failures.",
+      "Use normal passwords in Git config instead of tokens.",
+      "Copy the same configuration manually into every service forever.",
+      "Assume Actuator is only useful after production incidents.",
+      "Let the Gateway call localhost ports instead of service names.",
+      "Use a fallback that has a different method signature.",
+      "Ignore the Spring Cloud BOM and mix starter versions randomly.",
+      "Place Gateway route filters in the Eureka server configuration.",
+      "Expect TimeLimiter to control blocking calls without async or client timeouts.",
+      "Configure YAML instance names that do not match annotation names.",
+      "Keep health endpoints hidden from all operational checks.",
+      "Make API clients call employee-service, department-service, and order-service directly.",
+      "Use @PostMapping('/employees') when the Feign base path already ends with employees.",
+      "Start the API Gateway before discovery and configuration are available."
+    ];
+
+    function c(focus, easy, medium, hard) {
+      return { focus, easy, medium, hard };
+    }
+
+    const TOPIC_CATALOG = [
+      {
+        topic: "Spring Cloud BOM",
+        source: "1. Spring Cloud Dependency Management",
+        traps: [
+          "The BOM starts Eureka automatically.",
+          "The BOM replaces all service-specific dependencies.",
+          "The BOM belongs inside application.yml.",
+          "The BOM is only needed for Actuator endpoints."
+        ],
+        cards: [
+          c("dependency compatibility", "The Spring Cloud BOM keeps Spring Cloud dependency versions compatible with the selected Spring Boot generation.", "Import org.springframework.cloud:spring-cloud-dependencies in dependencyManagement with type pom and scope import.", "When starters behave inconsistently across services, align the project with a supported Spring Cloud BOM before pinning random versions."),
+          c("java version", "The reference uses Java 17 as the project baseline.", "The java.version property is declared beside the spring-cloud.version property in the Maven build.", "If one module compiles with a different Java baseline, normalize the build properties before debugging Spring Cloud behavior."),
+          c("spring-cloud.version", "The reference names 2023.0.3 as the Spring Cloud release train value.", "The property spring-cloud.version is used by the imported Spring Cloud dependencies BOM.", "A version mismatch between Boot and Spring Cloud should be solved by choosing a compatible release train, not by copying transitive versions."),
+          c("dependencyManagement", "dependencyManagement controls dependency versions without adding every dependency to the classpath.", "The BOM is imported under dependencyManagement, not under normal dependencies.", "If a service lacks Eureka classes, add the starter dependency; the BOM only manages versions."),
+          c("scope import", "scope import is required when importing a Maven BOM.", "The Spring Cloud BOM entry uses type pom and scope import.", "If Maven ignores the BOM, check type and scope before blaming runtime configuration."),
+          c("multi-module consistency", "All microservices should use the same Spring Cloud version family.", "A parent pom is a clean place to centralize Spring Cloud version management.", "In a demo with several services, keep BOM configuration shared so Gateway, Config, and Eureka starters line up."),
+          c("starter versions", "Spring Cloud starter versions should normally come from the BOM.", "Avoid hardcoding separate versions for each Spring Cloud starter when the BOM manages them.", "Pinning individual starters can create subtle compatibility failures between Gateway, LoadBalancer, Config, and Eureka."),
+          c("project setup order", "Dependency alignment comes before service-specific code.", "Declare shared properties and the BOM before adding Spring Cloud starters.", "When creating a new microservices repo, establish the BOM first so later services inherit a stable dependency set."),
+          c("Boot and Cloud relationship", "Spring Cloud libraries are designed for specific Spring Boot release families.", "The BOM expresses the supported Spring Cloud release train for the project.", "If upgrading Boot, review the Spring Cloud compatibility matrix instead of assuming the old BOM still works."),
+          c("purpose boundary", "The BOM solves version management, not routing or discovery by itself.", "You still need the actual starters such as eureka-client, gateway, config, or openfeign.", "A service with only the BOM and no starter will not register, route, fetch config, or create Feign clients.")
+        ]
+      },
+      {
+        topic: "Eureka Server",
+        source: "2. Eureka Server",
+        traps: [
+          "A Eureka server should register with itself by default in a simple standalone setup.",
+          "Eureka replaces the API Gateway.",
+          "Eureka stores application business data.",
+          "The server should fetch a registry from itself in the reference setup."
+        ],
+        cards: [
+          c("service discovery role", "Eureka Server is the registry that lets services find each other by service name.", "Other services can call http://employee-service instead of hardcoding http://localhost:8081.", "When ports or instances change, discovery keeps clients from needing direct endpoint rewrites."),
+          c("server starter", "A Eureka Server uses the spring-cloud-starter-netflix-eureka-server dependency.", "The dependency group is org.springframework.cloud and the artifact is spring-cloud-starter-netflix-eureka-server.", "If @EnableEurekaServer is unavailable, first check that the server starter is actually on the classpath."),
+          c("@EnableEurekaServer", "The main application class enables the registry with @EnableEurekaServer.", "@EnableEurekaServer is placed with @SpringBootApplication on the Eureka server application class.", "If the app starts as a normal Boot app but no registry appears, verify the enable annotation and server starter."),
+          c("server port", "The reference Eureka server listens on port 8761.", "server.port is set to 8761 in the Eureka server application.yml.", "Clients pointing to localhost:8761/eureka will fail if the registry is moved without updating defaultZone."),
+          c("application name", "The reference service name for the registry is eureka-server.", "spring.application.name is set to eureka-server.", "The name helps identify the app, but the client defaultZone URL is what points clients to the registry."),
+          c("register-with-eureka false", "The standalone Eureka server should not register itself as a client.", "eureka.client.register-with-eureka is false in the server config.", "If the server appears as a registered app in a simple demo, check whether self-registration was left enabled."),
+          c("fetch-registry false", "The standalone Eureka server does not need to fetch a registry from itself.", "eureka.client.fetch-registry is false in the server config.", "Fetching a registry is useful for clients, not for this standalone registry setup."),
+          c("self preservation", "Self-preservation prevents Eureka from removing services too aggressively during temporary network trouble.", "eureka.server.enable-self-preservation can be true.", "If a short network issue happens, self-preservation reduces accidental mass eviction of healthy services."),
+          c("registry dashboard", "Eureka gives visibility into registered applications and instances.", "The registry is normally viewed through the server running on port 8761.", "If employee-service is missing from the dashboard, check the service name and its client defaultZone."),
+          c("discovery naming", "Eureka maps logical service names to currently running service instances.", "employee-service must match the spring.application.name used by the registered service.", "Calling http://employee-service works only when the service registered under that exact logical name.")
+        ]
+      },
+      {
+        topic: "Eureka Client",
+        source: "3. Eureka Client",
+        traps: [
+          "Every client should set register-with-eureka to false.",
+          "The service name is optional when other services use discovery.",
+          "fetch-registry should be false for services that call other services.",
+          "prefer-ip-address changes the logical service name."
+        ],
+        cards: [
+          c("client starter", "A service registers with Eureka by adding the spring-cloud-starter-netflix-eureka-client dependency.", "The dependency artifact is spring-cloud-starter-netflix-eureka-client.", "If a microservice never appears in Eureka, verify the client starter before changing registry settings."),
+          c("defaultZone", "defaultZone tells a Eureka client where the registry is running.", "The reference uses eureka.client.service-url.defaultZone: http://localhost:8761/eureka.", "If services cannot register, the first URL to verify is the client's defaultZone."),
+          c("register true", "A normal microservice should register itself with Eureka.", "eureka.client.register-with-eureka is true for employee-service style clients.", "If a service can fetch the registry but does not show up, register-with-eureka may be disabled."),
+          c("fetch true", "A client that calls other services should fetch the Eureka registry.", "eureka.client.fetch-registry is true for normal microservices.", "If LoadBalancer cannot resolve employee-service, check whether the caller fetches the registry."),
+          c("application name", "spring.application.name becomes the logical service name in discovery.", "employee-service is called as http://employee-service/api/v1/employees.", "If the app name is employee-api but callers use employee-service, discovery resolution will fail."),
+          c("prefer ip address", "prefer-ip-address can make Eureka advertise the instance IP address.", "eureka.instance.prefer-ip-address is set under the instance section.", "This setting can help network resolution, but it does not replace the service's logical discovery name."),
+          c("multiple services", "employee-service, department-service, order-service, and api-gateway can all be Eureka clients.", "Each client has its own spring.application.name and points to the same defaultZone.", "A full demo expects all participating services to register so routing and client calls can use names."),
+          c("logical URL usage", "A discovered service is called by name rather than by fixed port.", "The reference call shape is http://employee-service/api/v1/employees.", "If code still calls localhost:8081, it is bypassing discovery and will not load balance across instances."),
+          c("name consistency", "The service name in code must match spring.application.name.", "Other services call the exact name configured by spring.application.name.", "A typo in application name creates a discovery bug that looks like a network failure."),
+          c("gateway as client", "The API Gateway can also register with Eureka.", "Gateway config includes the Eureka client settings so lb:// routes can resolve services.", "If Gateway routes with lb:// fail, verify the Gateway itself is a Eureka client and fetches the registry.")
+        ]
+      },
+      {
+        topic: "API Gateway",
+        source: "4. API Gateway",
+        traps: [
+          "Clients should call every internal service directly.",
+          "Gateway routes should use jdbc:// service names.",
+          "StripPrefix adds a path segment before forwarding.",
+          "Gateway replaces each service controller."
+        ],
+        cards: [
+          c("single entry point", "API Gateway is the single entry point for clients.", "Clients call api-gateway instead of employee-service, department-service, or order-service directly.", "Use the Gateway to centralize routing so external clients do not need to know internal service topology."),
+          c("gateway starter", "Spring Cloud Gateway uses the spring-cloud-starter-gateway dependency.", "The Gateway app also needs eureka-client when it resolves lb:// service names through discovery.", "If route definitions load but lb:// targets fail, the missing piece may be Eureka client registration."),
+          c("gateway port", "The reference Gateway listens on port 8080.", "server.port is 8080 in the Gateway application.yml.", "External examples such as http://localhost:8080/employees/... assume the Gateway owns port 8080."),
+          c("route id", "Each Gateway route should have a clear id.", "The reference uses ids like employee-service-route and department-service-route.", "Useful route ids make troubleshooting route behavior easier when multiple services are behind the Gateway."),
+          c("lb uri", "Gateway routes use lb://service-name to load-balance through discovery.", "uri: lb://employee-service tells Gateway to resolve employee-service through Spring Cloud LoadBalancer.", "If uri points to localhost, the route is tied to one instance and bypasses discovery."),
+          c("path predicate", "The Path predicate decides which request path matches a route.", "Path=/employees/** matches requests under /employees.", "If a request never reaches the target service, first check the route predicate path."),
+          c("StripPrefix", "StripPrefix=1 removes the first path segment before forwarding.", "A call to /employees/api/v1/employees/1 becomes /api/v1/employees/1 after StripPrefix=1.", "If the downstream receives /employees/api/v1/..., StripPrefix may be missing or miscounted."),
+          c("request headers", "Gateway filters can add headers to forwarded requests.", "AddRequestHeader=X-Gateway-Source, spring-cloud-gateway adds a marker header.", "Gateway is a good place to add cross-cutting request metadata before the call reaches a service."),
+          c("java routes", "Gateway routes can be configured in Java using RouteLocatorBuilder.", "A @Bean RouteLocator can define path, filters, and uri for each route.", "Use Java-based routes when programmatic route composition is useful; YAML is simpler for most demos."),
+          c("yaml routes", "YAML route definitions are usually simpler and cleaner for common projects.", "spring.cloud.gateway.routes contains id, uri, predicates, and filters.", "For a learning demo, YAML is easier to scan than Java route code unless conditional routing is required.")
+        ]
+      },
+      {
+        topic: "Config Server",
+        source: "5. Spring Cloud Config Server",
+        traps: [
+          "Config Server is a replacement for Eureka discovery.",
+          "Each service must keep all shared config duplicated locally.",
+          "GitHub config should use a normal account password.",
+          "The Config Server listens on the Gateway port."
+        ],
+        cards: [
+          c("centralized config", "Config Server centralizes microservice configuration.", "Services can load config from Git, a local file system, or another central config source.", "Central config prevents every service from carrying independent copies of shared settings."),
+          c("config server starter", "The Config Server uses the spring-cloud-config-server dependency.", "The artifact id for the server is spring-cloud-config-server.", "If @EnableConfigServer is missing, verify the server dependency first."),
+          c("@EnableConfigServer", "The main class enables config serving with @EnableConfigServer.", "@EnableConfigServer sits with @SpringBootApplication on the config server application class.", "A Boot app with config properties but no enable annotation will not behave as a Config Server."),
+          c("server port 8888", "The reference Config Server runs on port 8888.", "server.port is 8888 for the config-server.", "Client import URLs such as configserver:http://localhost:8888 depend on that port."),
+          c("git backend", "Config Server can read configuration from a Git repository.", "spring.cloud.config.server.git.uri points to the config repo.", "For team projects, Git-backed config gives history and review for configuration changes."),
+          c("github token", "For GitHub config access, use a personal access token instead of a normal password.", "The password field should contain a token when authenticating to GitHub.", "If Git config access fails, check token authentication before exposing account passwords."),
+          c("clone on start", "clone-on-start makes the Config Server clone the Git repo during startup.", "force-pull can keep the local clone updated from the remote.", "These settings help the server fail early if the configuration repository is inaccessible."),
+          c("native profile", "The native profile lets Config Server serve files from a local file system.", "spring.profiles.active: native enables the native backend.", "For local learning, native config is useful because it avoids remote Git setup."),
+          c("search locations", "native.search-locations points to the folder where local config files live.", "Mac or Linux paths use file:///home/user/config-repo style URLs.", "If local config is not found, inspect the file URI format and active native profile."),
+          c("config repo structure", "The config repository can hold employee-service.yml, department-service.yml, api-gateway.yml, and order-service.yml.", "Config Server chooses files based on the requesting spring.application.name and profile.", "A missing employee-service.yml means the employee service has no matching centralized config to load.")
+        ]
+      },
+      {
+        topic: "Config Client",
+        source: "5. Spring Cloud Config Server - Config Client",
+        traps: [
+          "Config clients do not need a spring.application.name.",
+          "Config import belongs in the Eureka server only.",
+          "optional config import prevents the Config Server from ever being used.",
+          "Config Server file names are unrelated to service names."
+        ],
+        cards: [
+          c("client starter", "A service that reads from Config Server needs spring-cloud-starter-config.", "The client dependency artifact is spring-cloud-starter-config.", "If config import is ignored, make sure the config client starter is present."),
+          c("config import", "A client imports config using spring.config.import.", "The reference import is optional:configserver:http://localhost:8888.", "If a service should fail hard when config is unavailable, optional can be removed intentionally."),
+          c("application name lookup", "Config Server uses spring.application.name to find matching config files.", "employee-service loads files like employee-service.yml, employee-service-dev.yml, and employee-service-prod.yml.", "If the app name and file name do not match, the service will not receive the expected centralized settings."),
+          c("profile-specific files", "Profile files allow environment-specific configuration.", "employee-service-dev.yml and employee-service-prod.yml are profile variants for employee-service.", "When a prod value is missing, check whether the active profile maps to the right config file."),
+          c("local override awareness", "Client services can still keep local bootstrap or minimal config needed to contact Config Server.", "spring.application.name and spring.config.import usually remain in the service application.yml.", "Do not move the information needed to contact Config Server only into Config Server itself."),
+          c("optional behavior", "optional: lets the service start even if Config Server is unavailable.", "optional:configserver:http://localhost:8888 is tolerant for demos.", "For production-critical central config, decide whether startup should fail instead of silently using local defaults."),
+          c("shared resilience config", "Central config can hold Resilience4j settings for a service.", "employee-service.yml can include resilience4j.circuitbreaker.instances.employeeService.", "Centralizing resilience settings makes threshold changes possible without editing service source files."),
+          c("config naming mistake", "A config file named user-service.yml will not configure employee-service unless the app name matches.", "The file base name should match spring.application.name.", "When a property does not appear in a service, verify the name and active profile before changing code."),
+          c("config source choice", "Git is better for versioned team config; native file system is simpler for local learning.", "The server backend decides where files are loaded from, while clients keep the same configserver import shape.", "You can switch server backends without changing every client as long as the Config Server URL remains stable."),
+          c("startup dependency", "Config Server should start before clients that depend on externalized config.", "The recommended flow starts Config Server first.", "If clients start before required config is available, they may boot with defaults or fail depending on optional import.")
+        ]
+      },
+      {
+        topic: "RestClient LoadBalancer",
+        source: "6. RestClient with LoadBalancer",
+        traps: [
+          "RestClient is older than RestTemplate.",
+          "@LoadBalanced belongs on every controller method.",
+          "Use raw List.class for typed list responses.",
+          "A service name in a URI must be a real DNS domain."
+        ],
+        cards: [
+          c("modern sync client", "RestClient is the modern Spring way for synchronous HTTP calls.", "It is newer than RestTemplate for this style of synchronous client call.", "Use RestClient when you want explicit request construction without defining a Feign interface."),
+          c("loadbalancer starter", "RestClient service-name resolution needs Spring Cloud LoadBalancer.", "Add spring-cloud-starter-loadbalancer for LoadBalanced RestClient usage.", "If http://employee-service cannot resolve, make sure the caller has LoadBalancer support."),
+          c("eureka with RestClient", "A RestClient caller that uses Eureka service names also needs the Eureka client starter.", "The caller registers and fetches the registry through spring-cloud-starter-netflix-eureka-client.", "LoadBalancer can choose service instances only if discovery data is available."),
+          c("@LoadBalanced builder", "The RestClient.Builder bean should be annotated with @LoadBalanced.", "@LoadBalanced is placed on the RestClient.Builder bean, then RestClient is built from that builder.", "If RestClient was built from a non-load-balanced builder, service-name URLs will not be resolved."),
+          c("RestClient bean", "The RestClient bean can be built from the injected load-balanced builder.", "return restClientBuilder.build() creates the reusable RestClient.", "Keep the builder setup centralized so all calls share discovery behavior."),
+          c("GET by id", "A GET call can use URI template variables for IDs.", "restClient.get().uri('http://employee-service/api/v1/employees/{id}', employeeId) calls the discovered service.", "The host employee-service is a Eureka service name, not an internet domain."),
+          c("headers", "RestClient can pass headers such as Authorization and X-Correlation-Id.", ".header('Authorization', 'Bearer ' + token) and .header('X-Correlation-Id', correlationId) add request metadata.", "Correlation IDs should travel across service calls so logs can connect the request path."),
+          c("list response", "ParameterizedTypeReference preserves the list element type.", "body(new ParameterizedTypeReference<List<EmployeeResponse>>() {}) reads a typed list.", "Using raw List.class loses the EmployeeResponse generic type and can produce awkward casting later."),
+          c("POST body", "RestClient can send a body with post().body(request).", "The POST example sets headers, body(request), retrieve(), and body(EmployeeResponse.class).", "If the target expects JSON, make sure the request DTO and content negotiation are correct."),
+          c("service class wrapper", "Wrapping RestClient calls in an EmployeeRestClient service keeps remote-call code in one place.", "The service class exposes getEmployeeById, getAllEmployees, and createEmployee methods.", "Do not scatter raw remote HTTP calls through controllers when a focused client class can own them.")
+        ]
+      },
+      {
+        topic: "OpenFeign",
+        source: "7. OpenFeign Client",
+        traps: [
+          "Feign requires manually calling restClient.get in every method.",
+          "Feign base path and method path should always repeat the same segment.",
+          "@EnableFeignClients belongs on the Eureka server only.",
+          "Feign cannot pass request headers."
+        ],
+        cards: [
+          c("declarative client", "Feign lets you define a REST client as an interface.", "Spring creates the implementation from an interface annotated with @FeignClient.", "Use Feign when you want concise HTTP clients and clear method signatures."),
+          c("openfeign starter", "OpenFeign uses spring-cloud-starter-openfeign.", "The dependency artifact is spring-cloud-starter-openfeign.", "If @FeignClient is not recognized, check the OpenFeign starter before changing interface code."),
+          c("@EnableFeignClients", "Feign clients are enabled with @EnableFeignClients on the application class.", "@EnableFeignClients appears with @SpringBootApplication in the order-service main class.", "If interfaces exist but beans are not created, verify Feign scanning is enabled."),
+          c("client name", "@FeignClient name points to the discovered service.", "name = 'employee-service' tells Feign to call the registered employee-service.", "A name mismatch between Feign and spring.application.name causes resolution failures."),
+          c("base path", "The Feign path can hold the shared base API path.", "path = '/api/v1/employees' avoids repeating the base path on every method.", "Keep method mappings relative to the base path to prevent duplicated segments."),
+          c("GET mapping", "A Feign GET method can bind a path variable.", "@GetMapping('/{id}') with @PathVariable('id') Long employeeId calls one employee.", "If the path variable name does not match, request construction can fail."),
+          c("headers", "Feign methods can require headers with @RequestHeader.", "Authorization, X-Correlation-Id, and X-Client-Name can be passed as method parameters.", "Use headers to propagate auth, tracing, and caller identity through service-to-service calls."),
+          c("POST mapping", "A Feign POST method can send a request body.", "@PostMapping with @RequestBody CreateEmployeeRequest sends the create request to the base path.", "Do not append /employees again when the Feign client path already includes it."),
+          c("service wrapper", "A service class can wrap Feign calls and prepare headers.", "OrderEmployeeService passes 'Bearer ' + token, correlationId, and 'order-service'.", "A wrapper keeps controller code away from header assembly and remote client details."),
+          c("common path mistake", "Repeating employees in both @FeignClient path and @PostMapping creates a doubled URL.", "@PostMapping is correct when the base path already ends with /api/v1/employees.", "A 404 on /api/v1/employees/employees usually means the base path was repeated.")
+        ]
+      },
+      {
+        topic: "Resilience4j Patterns",
+        source: "8. Resilience4j",
+        traps: [
+          "CircuitBreaker retries every failed request forever.",
+          "Bulkhead changes service discovery names.",
+          "RateLimiter stores central configuration files.",
+          "Fallback methods should ignore the original method arguments."
+        ],
+        cards: [
+          c("resilience goal", "Resilience4j protects services from failures in downstream calls.", "It adds patterns such as CircuitBreaker, Retry, Bulkhead, RateLimiter, and TimeLimiter.", "Use it around remote calls so one failing service does not cascade across the system."),
+          c("CircuitBreaker", "CircuitBreaker temporarily stops calling a failing service.", "It opens when failure or slow-call thresholds are crossed.", "If a downstream is unstable, CircuitBreaker prevents constant calls from making the outage worse."),
+          c("Retry", "Retry attempts a failed request again.", "Retry config can set max-attempts, wait-duration, and exponential backoff.", "Retries are useful for transient failures, but too many retries can increase load on a struggling service."),
+          c("Bulkhead", "Bulkhead limits concurrent calls.", "max-concurrent-calls controls how many calls can enter a protected operation.", "Bulkhead isolation keeps one slow dependency from consuming all request-handling capacity."),
+          c("RateLimiter", "RateLimiter limits calls per time period.", "limit-for-period and limit-refresh-period define the allowance and refresh window.", "Rate limiting protects services from traffic spikes or noisy callers."),
+          c("TimeLimiter", "TimeLimiter times out long-running operations.", "The timelimiter instance can set timeout-duration and cancel-running-future.", "Use timeout protection so callers do not wait indefinitely for a slow remote service."),
+          c("spring boot 3 dependency", "Spring Boot 3 uses the resilience4j-spring-boot3 dependency.", "The group is io.github.resilience4j and the artifact is resilience4j-spring-boot3.", "If annotations are missing in a Boot 3 app, verify the Boot 3 Resilience4j starter."),
+          c("micrometer dependency", "resilience4j-micrometer adds metrics integration.", "The reference adds resilience4j-micrometer for Actuator metrics.", "Without metrics integration, operational visibility into circuit breakers and retries is weaker."),
+          c("actuator pairing", "Actuator should be present when exposing Resilience4j health and metrics.", "spring-boot-starter-actuator is included alongside Resilience4j dependencies.", "Protection patterns are more useful when their health and metrics are visible."),
+          c("annotation style", "Resilience4j annotations can decorate a service method around a remote call.", "@CircuitBreaker, @Retry, @RateLimiter, and @Bulkhead can reference the same named instance.", "Keep annotations on service-layer remote-call methods rather than unrelated pure business calculations.")
+        ]
+      },
+      {
+        topic: "Resilience4j Config",
+        source: "8. Resilience4j - application.yml",
+        traps: [
+          "failure-rate-threshold is configured under eureka.client.",
+          "ignore-exceptions should include transient network failures.",
+          "The annotation name can differ from the YAML instance name.",
+          "minimum-number-of-calls means maximum attempts."
+        ],
+        cards: [
+          c("sliding window type", "A CircuitBreaker sliding window can be count-based.", "sliding-window-type: COUNT_BASED uses the last N calls.", "Use count-based windows when you want decisions based on a fixed number of recent calls."),
+          c("sliding window size", "sliding-window-size controls how many calls are considered.", "The reference uses sliding-window-size: 10.", "A tiny window can open too quickly, while a large one may react slowly."),
+          c("minimum calls", "minimum-number-of-calls prevents decisions before enough calls are recorded.", "The reference sets minimum-number-of-calls: 5.", "Without a reasonable minimum, one early failure could distort the breaker state."),
+          c("failure threshold", "failure-rate-threshold controls when failure percentage opens the CircuitBreaker.", "The reference sets failure-rate-threshold: 50.", "At a 50 percent threshold, half of the measured calls failing can trip the breaker after the minimum call count."),
+          c("slow call threshold", "slow-call-rate-threshold and slow-call-duration-threshold detect slow dependencies.", "The reference uses slow-call-rate-threshold: 50 and slow-call-duration-threshold: 2s.", "A service can be harmful even when it returns eventually; slow-call settings catch that case."),
+          c("open wait duration", "wait-duration-in-open-state controls how long the CircuitBreaker stays open before trying half-open.", "The reference uses wait-duration-in-open-state: 30s.", "This wait gives the downstream time to recover before test calls resume."),
+          c("half-open calls", "permitted-number-of-calls-in-half-open-state limits trial calls during recovery.", "The reference allows 3 calls in half-open state.", "Half-open limits avoid flooding a service that is only beginning to recover."),
+          c("record exceptions", "record-exceptions tells the CircuitBreaker which failures should count.", "IOException, TimeoutException, and ResourceAccessException are recorded in the reference.", "Infrastructure failures should count toward resilience decisions."),
+          c("ignore exceptions", "ignore-exceptions excludes errors that should not trip resilience policies.", "BusinessException is ignored in the reference.", "Business validation errors should not be treated as downstream infrastructure failures."),
+          c("instance naming", "Annotation names must match YAML instance names.", "@CircuitBreaker(name = 'employeeService') must map to instances.employeeService.", "A mismatch such as annotation employeeService and YAML userService silently prevents intended settings from applying.")
+        ]
+      },
+      {
+        topic: "Resilience Order",
+        source: "9. Correct Resilience Order",
+        traps: [
+          "Retry should always happen before every other protection.",
+          "Fallback is called before the actual method is attempted.",
+          "RateLimiter is only checked after the downstream service responds.",
+          "Annotation order never affects behavior."
+        ],
+        cards: [
+          c("overall order", "The recommended order is RateLimiter, Bulkhead, TimeLimiter, CircuitBreaker, Retry, then the actual method.", "This order limits rate, limits concurrency, applies timeout, observes circuit state, and then retries as configured.", "Order matters because each pattern protects a different resource or failure mode."),
+          c("rate first", "RateLimiter should be checked before spending work on a call.", "RateLimiter appears first in the common recommended order.", "Rejecting excess requests early avoids consuming concurrency slots or downstream capacity."),
+          c("bulkhead second", "Bulkhead checks concurrency before entering the protected remote call.", "Bulkhead follows RateLimiter in the recommended order.", "This keeps too many simultaneous calls from piling into a slow dependency."),
+          c("timeout before breaker", "TimeLimiter can bound how long the operation is allowed to run.", "TimeLimiter comes before CircuitBreaker in the listed order.", "Timeouts turn long waits into observable outcomes for later resilience behavior."),
+          c("breaker observation", "CircuitBreaker observes success and failure results.", "CircuitBreaker is placed before Retry in the listed order, depending on annotation behavior.", "The breaker should see meaningful final outcomes rather than letting failures cascade silently."),
+          c("retry attempts", "Retry can attempt the call multiple times before fallback.", "With max-attempts: 3, three failed attempts can occur before fallback.", "Use retries for transient faults, but keep attempts bounded."),
+          c("common REST combo", "For normal REST calls, CircuitBreaker plus Retry is a common pair.", "@CircuitBreaker and @Retry can protect a remote service call.", "This combination handles temporary failures while avoiding constant calls to an unhealthy service."),
+          c("fallback timing", "Fallback is called when the final protected result fails.", "After retry attempts are exhausted, fallback can return a safe response.", "Do not expect fallback to run before the remote call has been tried according to policy."),
+          c("retry load risk", "Retrying too much can increase load on a failing service.", "The reference warns to be careful with excessive retrying.", "In an outage, aggressive retry policies can amplify traffic and slow recovery."),
+          c("good retry default", "A reasonable retry default is max-attempts: 3 with wait-duration: 500ms and exponential backoff.", "enable-exponential-backoff: true with multiplier 2 is shown as a good default.", "Backoff spaces out retries so the downstream has time to recover.")
+        ]
+      },
+      {
+        topic: "TimeLimiter",
+        source: "10. TimeLimiter Correct Usage",
+        traps: [
+          "TimeLimiter works best with void methods.",
+          "Synchronous REST calls need no client-level timeout.",
+          "The fallback should return EmployeeResponse when the main method returns CompletableFuture<EmployeeResponse>.",
+          "TimeLimiter replaces all Retry and CircuitBreaker configuration."
+        ],
+        cards: [
+          c("async return type", "TimeLimiter works best with async return types such as CompletableFuture<T>.", "The example returns CompletableFuture<EmployeeResponse>.", "If a method is purely blocking, add client-level timeouts and be careful with TimeLimiter expectations."),
+          c("CompletableFuture supply", "The example wraps the Feign call in CompletableFuture.supplyAsync.", "getEmployeeAsync returns CompletableFuture.supplyAsync(() -> employeeClient.getEmployeeById(...)).", "Async wrapping gives TimeLimiter something it can time-bound as a future."),
+          c("annotation", "TimeLimiter uses @TimeLimiter with a named instance and fallbackMethod.", "@TimeLimiter(name = 'employeeService', fallbackMethod = 'employeeTimeoutFallback') protects the async method.", "The name should match resilience4j.timelimiter.instances.employeeService in YAML."),
+          c("fallback future", "A TimeLimiter fallback for a future-returning method should also return a CompletableFuture.", "employeeTimeoutFallback returns CompletableFuture<EmployeeResponse>.", "Fallback return type must match the protected method shape or Spring cannot call it correctly."),
+          c("completed future fallback", "A timeout fallback can return CompletableFuture.completedFuture(...).", "The example returns a completed future containing a fallback EmployeeResponse.", "This gives callers a normal completed async result instead of an unhandled timeout."),
+          c("timeout duration", "timeout-duration controls the maximum time allowed.", "The reference timelimiter sets timeout-duration: 2s.", "Choose a timeout that fits the caller SLA and downstream expected response time."),
+          c("cancel future", "cancel-running-future can attempt to cancel work after timeout.", "The reference sets cancel-running-future: true.", "Cancellation helps reduce wasted work when a timed-out future no longer matters."),
+          c("sync REST caution", "For normal synchronous REST calls, configure client-level timeouts too.", "The reference explicitly says synchronous calls should also have client-level timeouts.", "A blocking HTTP client needs connect/read timeouts so threads are not stuck indefinitely."),
+          c("method arguments", "Fallback methods include the original method arguments plus Throwable.", "employeeTimeoutFallback(Long employeeId, Throwable throwable) mirrors the async method input and error.", "A fallback signature mismatch is a common cause of runtime failures."),
+          c("timeout fallback message", "A timeout fallback should make degraded behavior explicit.", "The example response uses text like 'Timeout fallback'.", "Clear fallback responses help callers and logs distinguish degraded data from normal data.")
+        ]
+      },
+      {
+        topic: "Actuator",
+        source: "11. Actuator for Health and Monitoring",
+        traps: [
+          "Actuator is only for local development and should not be added to services.",
+          "Actuator route config belongs under spring.cloud.gateway.routes.",
+          "show-details controls Eureka registration.",
+          "circuitbreaker health appears without enabling any health indicators."
+        ],
+        cards: [
+          c("include actuator", "Every microservice should include Actuator for health and monitoring.", "The dependency is spring-boot-starter-actuator.", "Without Actuator, it is harder to inspect health, metrics, and resilience state."),
+          c("dependency", "Actuator uses org.springframework.boot:spring-boot-starter-actuator.", "The dependency is a Spring Boot starter, not a Spring Cloud starter.", "Add it to each service where health and operational endpoints are needed."),
+          c("endpoint exposure", "management.endpoints.web.exposure.include chooses which endpoints are exposed.", "The reference includes health, info, metrics, prometheus, circuitbreakers, and retries.", "If /actuator/metrics is missing, check endpoint exposure before debugging metrics collection."),
+          c("health details", "management.endpoint.health.show-details can reveal detailed health output.", "show-details: always is shown in the reference.", "Use appropriate detail settings for the environment so operators get useful health context."),
+          c("circuitbreaker health", "CircuitBreaker health indicators can be enabled under management.health.circuitbreakers.enabled.", "The reference sets circuitbreakers.enabled: true.", "This makes resilience status part of health visibility."),
+          c("ratelimiter health", "RateLimiter health indicators can be enabled under management.health.ratelimiters.enabled.", "The reference sets ratelimiters.enabled: true.", "Operational checks can then see rate limiter health where supported."),
+          c("health URL", "A service health endpoint is available at /actuator/health.", "The reference lists http://localhost:8081/actuator/health.", "Health endpoints are usually the first check when a service appears unavailable."),
+          c("metrics URL", "Metrics are available at /actuator/metrics when exposed.", "The reference lists http://localhost:8081/actuator/metrics.", "Metrics help confirm traffic, latency, JVM behavior, and resilience counters."),
+          c("circuitbreakers URL", "Resilience circuit breaker state can be exposed through Actuator.", "The reference lists /actuator/circuitbreakers.", "Use this endpoint to inspect breaker state instead of guessing from logs alone."),
+          c("retries URL", "Retry information can be exposed through Actuator.", "The reference lists /actuator/retries.", "When debugging retry behavior, check the Actuator retries endpoint if it is exposed.")
+        ]
+      },
+      {
+        topic: "Startup Flow",
+        source: "12. Recommended Microservices Startup Flow",
+        traps: [
+          "Start clients before Config Server so they can discover config.",
+          "Gateway should start before Eureka so it can create the registry.",
+          "Actuator starts the Config Server.",
+          "LoadBalancer chooses available instances before services register."
+        ],
+        cards: [
+          c("config first", "The recommended flow starts Config Server first.", "Config Server starts before Eureka and the microservices.", "Services depending on central config need that source available during startup."),
+          c("eureka second", "Eureka Server starts after Config Server.", "Eureka then becomes available for microservices to register.", "Starting Eureka early enough lets services appear in discovery as they boot."),
+          c("services register", "Microservices start and register with Eureka.", "Employee, department, and order services become discoverable by logical name.", "If a service is missing from routing, check whether it registered successfully."),
+          c("gateway register", "API Gateway starts and registers with Eureka.", "The Gateway can use Eureka and LoadBalancer to route lb:// service names.", "If the Gateway starts but cannot route, discovery registration/fetching may be incomplete."),
+          c("client calls gateway", "External clients call the API Gateway.", "The client does not call internal services directly.", "This keeps external traffic entering through one controlled routing layer."),
+          c("gateway routes", "Gateway routes requests using lb://service-name.", "Gateway uses route predicates and filters, then resolves the service through LoadBalancer.", "A route using lb://employee-service depends on discovery data."),
+          c("service calls service", "A service can call another service using Feign or RestClient.", "Order service can call employee-service through a client abstraction.", "Service-to-service calls should still propagate headers such as correlation IDs where needed."),
+          c("loadbalancer choice", "LoadBalancer chooses an available instance.", "The caller uses discovery data to choose a running service instance.", "With multiple instances, LoadBalancer avoids tying the caller to a single host/port."),
+          c("resilience protection", "Resilience4j protects remote calls in the flow.", "CircuitBreaker, Retry, Bulkhead, RateLimiter, or TimeLimiter wrap service-to-service calls.", "Protect remote calls because they are the part most likely to fail or slow down."),
+          c("actuator visibility", "Actuator exposes health, metrics, and circuit breaker status.", "Operational endpoints come after services are running and instrumented.", "Use Actuator to verify the system instead of relying only on startup logs.")
+        ]
+      },
+      {
+        topic: "Full Request Flow",
+        source: "13. Full Request Flow",
+        traps: [
+          "The client calls the database first.",
+          "Eureka executes business logic for Employee Service.",
+          "Actuator replaces Department Service responses.",
+          "The Gateway stores employee records."
+        ],
+        cards: [
+          c("client to gateway", "The full request flow begins with the client calling API Gateway.", "Client -> API Gateway is the first hop in the diagram.", "External callers should not need direct network access to internal services."),
+          c("gateway to discovery", "The Gateway uses Eureka Discovery to find services.", "API Gateway -> Eureka Discovery appears before routing to Employee Service.", "Discovery lets Gateway route by logical service name instead of fixed host and port."),
+          c("employee service", "Employee Service is the target service in the sample flow.", "Eureka helps Gateway find Employee Service.", "A missing Employee Service registration breaks the path after Gateway route matching."),
+          c("department service", "Employee Service can call Department Service.", "Employee Service -> Department Service is shown in the diagram.", "This is a typical service-to-service dependency that should be protected and observable."),
+          c("employee database", "Employee Service can call its own database.", "Employee Service -> Employee Database is shown in the diagram.", "The database is behind the owning service rather than directly exposed to every client."),
+          c("metrics branch", "Employee Service also connects to Actuator or metrics.", "Employee Service -> Actuator / Metrics appears as an observability branch.", "Operations data should be available alongside normal request handling."),
+          c("gateway responsibility", "Gateway routes and filters requests; it does not own employee business data.", "Business handling remains inside services such as Employee Service.", "Do not put service-specific business logic into Gateway routes."),
+          c("discovery responsibility", "Eureka provides instance discovery; it does not process employee business rules.", "Eureka helps locate Employee Service.", "Treat discovery as infrastructure, not as a business service."),
+          c("service ownership", "Employee data should be owned by Employee Service and its database.", "The flow places Employee Database behind Employee Service.", "Direct database access from other services would bypass service ownership boundaries."),
+          c("observable flow", "A complete flow includes routing, discovery, service logic, dependencies, and metrics.", "The diagram shows Gateway, Eureka, Employee Service, Department Service, database, and Actuator/Metrics.", "Troubleshooting should follow each hop rather than checking only the controller.")
+        ]
+      },
+      {
+        topic: "Project Structure",
+        source: "14. Minimum Services in Example Project",
+        traps: [
+          "A complete demo needs only one service named app.",
+          "Config server and Eureka server are the same service.",
+          "The Gateway should be embedded inside each business service.",
+          "All services should share one source folder without module boundaries."
+        ],
+        cards: [
+          c("minimum modules", "The recommended demo includes eureka-server, config-server, api-gateway, employee-service, department-service, and order-service.", "The project structure lists those six service folders under microservices-demo.", "Keeping infrastructure and business services separate makes each responsibility clear."),
+          c("eureka module", "eureka-server owns service discovery.", "It is a separate module in the recommended project structure.", "Do not mix discovery server code into a business service just to save a folder."),
+          c("config module", "config-server owns centralized configuration serving.", "It is separate from eureka-server and api-gateway.", "Separating config keeps configuration concerns independent from routing and discovery."),
+          c("gateway module", "api-gateway owns external routing into the system.", "It appears as its own module in the structure.", "A separate Gateway can route to multiple internal services without duplicating routing config."),
+          c("employee module", "employee-service is a business service in the demo.", "It can own employee APIs and employee data access.", "Business services should expose their own APIs rather than relying on the Gateway for business logic."),
+          c("department module", "department-service is another business service in the demo.", "Employee Service can call Department Service in the full flow.", "Separate services make service-to-service communication patterns visible for learning."),
+          c("order module", "order-service is included to demonstrate calling other services.", "Order service can use RestClient or Feign to call employee-service.", "A caller service is useful for practicing clients, headers, load balancing, and resilience."),
+          c("infrastructure vs business", "Eureka, Config, and Gateway are infrastructure services; employee, department, and order are business services.", "The structure separates infrastructure modules from domain modules.", "This separation makes startup order and responsibilities easier to reason about."),
+          c("learning coverage", "The project structure supports practicing every pattern in the reference.", "Each module maps to patterns such as discovery, config, routing, clients, resilience, and monitoring.", "A single-service demo cannot show discovery, Gateway routing, and service-to-service calls deeply."),
+          c("folder clarity", "Clear service folders make commands, configs, and ports easier to manage.", "microservices-demo/<service-name>/ gives each service its own code and application.yml.", "When debugging, inspect the module that owns the failing responsibility rather than changing unrelated services.")
+        ]
+      },
+      {
+        topic: "Common Mistakes",
+        source: "Cross-topic mistakes from the reference",
+        traps: [
+          "The best fix for every microservice issue is to add more retries.",
+          "Path duplication is harmless because Gateway removes all repeated segments.",
+          "Service names, Feign names, and YAML instance names never need to match.",
+          "Localhost URLs are always better than discovery names."
+        ],
+        cards: [
+          c("hardcoded URLs", "Hardcoding localhost service URLs defeats discovery.", "Use http://employee-service or lb://employee-service where the client type expects it.", "Hardcoded ports break when instances scale, move, or run on different hosts."),
+          c("service name typos", "A typo in spring.application.name or client name breaks discovery.", "Names such as employee-service must match across registration and callers.", "When resolution fails, compare names before assuming the network is down."),
+          c("Feign duplicated path", "Repeating a path segment in both Feign base path and method mapping creates doubled URLs.", "Use @PostMapping when @FeignClient path already contains /api/v1/employees.", "A doubled endpoint like /api/v1/employees/employees is a classic Feign mapping mistake."),
+          c("missing @LoadBalanced", "A RestClient built without a @LoadBalanced builder cannot resolve service-name hosts.", "Annotate the RestClient.Builder bean with @LoadBalanced.", "If employee-service is treated like a DNS hostname, check the builder configuration."),
+          c("generic list parsing", "Using raw List.class loses typed response information.", "Use ParameterizedTypeReference<List<EmployeeResponse>> for list bodies.", "Typed list parsing avoids fragile casts and confusing map-like objects."),
+          c("fallback signature", "Fallback methods must match the protected method arguments and include Throwable.", "The fallback return type should match the protected method return type.", "A wrong fallback signature usually fails at runtime when the fallback is needed most."),
+          c("resilience name mismatch", "Annotation instance names must match YAML instance names.", "employeeService in @CircuitBreaker must match resilience4j...instances.employeeService.", "A mismatch makes carefully tuned YAML look like it is being ignored."),
+          c("retry overload", "Too many retries can overload a failing dependency.", "Use bounded attempts, short waits, and exponential backoff.", "Retries should reduce transient failure pain, not multiply outage traffic."),
+          c("TimeLimiter on blocking calls", "TimeLimiter is not a full replacement for HTTP client timeouts on synchronous calls.", "Use async futures for TimeLimiter and configure client-level timeouts for blocking calls.", "Otherwise threads can still wait longer than the architecture expects."),
+          c("missing Actuator exposure", "Adding Actuator dependency is not the same as exposing every endpoint.", "management.endpoints.web.exposure.include controls available web endpoints.", "If /actuator/circuitbreakers is 404, check exposure and Resilience4j metrics/health config.")
+        ]
+      }
+    ];
+
+    const LEVELS = {
+      easy: {
+        label: "Easy",
+        question: (topic, focus) => `What should you remember about ${focus} in ${topic}?`,
+        answer: card => card.easy
+      },
+      medium: {
+        label: "Medium",
+        question: (topic, focus) => `Which implementation detail is correct for ${focus}?`,
+        answer: card => card.medium
+      },
+      hard: {
+        label: "Hard",
+        question: (topic, focus) => `A project issue points to ${focus}. Which decision best matches the reference?`,
+        answer: card => card.hard
+      }
+    };
+
+    const TOPIC_CARD_LIMITS = {
+      "Spring Cloud BOM": 8,
+      "Eureka Server": 9,
+      "Eureka Client": 9,
+      "API Gateway": 10,
+      "Config Server": 9,
+      "Config Client": 8,
+      "RestClient LoadBalancer": 10,
+      "OpenFeign": 10,
+      "Resilience4j Patterns": 9,
+      "Resilience4j Config": 9,
+      "Resilience Order": 8,
+      "TimeLimiter": 9,
+      "Actuator": 9,
+      "Startup Flow": 8,
+      "Full Request Flow": 8,
+      "Project Structure": 9,
+      "Common Mistakes": 8
+    };
+
+    function stableHash(value) {
+      let hash = 0;
+      for (let index = 0; index < value.length; index += 1) {
+        hash = ((hash << 5) - hash + value.charCodeAt(index)) | 0;
+      }
+      return Math.abs(hash);
+    }
+
+    function unique(values) {
+      return [...new Set(values.filter(Boolean))];
+    }
+
+    function rotate(values, amount) {
+      if (!values.length) return [];
+      const offset = amount % values.length;
+      return values.slice(offset).concat(values.slice(0, offset));
+    }
+
+    function makeChoices(correct, topic, seed) {
+      const topicInfo = TOPIC_CATALOG.find(item => item.topic === topic);
+      const pool = unique([...(topicInfo ? topicInfo.traps : []), ...DISTRACTOR_BANK])
+        .filter(item => item !== correct);
+      const wrong = rotate(pool, stableHash(seed)).slice(0, 3);
+      return [
+        { text: correct, correct: true },
+        ...wrong.map(text => ({ text, correct: false }))
+      ];
+    }
+
+    function buildQuestionBank() {
+      const questions = [];
+      TOPIC_CATALOG.forEach(topicInfo => {
+        const selectedCards = topicInfo.cards.slice(0, TOPIC_CARD_LIMITS[topicInfo.topic] || topicInfo.cards.length);
+        selectedCards.forEach((card, cardIndex) => {
+          Object.entries(LEVELS).forEach(([difficulty, level]) => {
+            const id = `${topicInfo.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${cardIndex + 1}-${difficulty}`;
+            const correct = level.answer(card);
+            questions.push({
+              id,
+              topic: topicInfo.topic,
+              difficulty,
+              question: level.question(topicInfo.topic, card.focus),
+              choices: makeChoices(correct, topicInfo.topic, id),
+              explanation: `${card.easy} ${card.medium} ${card.hard}`,
+              source: topicInfo.source
+            });
+          });
+        });
+      });
+      return questions;
+    }
+
+    const QUESTIONS = buildQuestionBank();
+    window.QUESTIONS = QUESTIONS;
+
+    const STORAGE_KEY = "spring-microservices-recall-state-v1";
+    const dom = {
+      bankSize: document.getElementById("bankSize"),
+      answeredStat: document.getElementById("answeredStat"),
+      scoreStat: document.getElementById("scoreStat"),
+      streakStat: document.getElementById("streakStat"),
+      missedStat: document.getElementById("missedStat"),
+      topicFilter: document.getElementById("topicFilter"),
+      difficultyFilter: document.getElementById("difficultyFilter"),
+      reviewButton: document.getElementById("reviewButton"),
+      resetButton: document.getElementById("resetButton"),
+      topicTag: document.getElementById("topicTag"),
+      difficultyTag: document.getElementById("difficultyTag"),
+      queueTag: document.getElementById("queueTag"),
+      questionText: document.getElementById("questionText"),
+      sourceText: document.getElementById("sourceText"),
+      options: document.getElementById("options"),
+      feedback: document.getElementById("feedback"),
+      nextButton: document.getElementById("nextButton"),
+      normalModeButton: document.getElementById("normalModeButton"),
+      progressBar: document.getElementById("progressBar"),
+      topicGrid: document.getElementById("topicGrid")
+    };
+
+    const initialState = {
+      answered: 0,
+      correct: 0,
+      streak: 0,
+      bestStreak: 0,
+      missed: {},
+      topicStats: {},
+      mode: "all",
+      topic: "all",
+      difficulty: "all"
+    };
+
+    let state = loadState();
+    let queue = [];
+    let currentQuestion = null;
+    let locked = false;
+    let autoTimer = null;
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return saved ? { ...initialState, ...saved } : { ...initialState };
+      } catch (error) {
+        return { ...initialState };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function getFilteredQuestions() {
+      return QUESTIONS.filter(question => {
+        const topicMatch = state.topic === "all" || question.topic === state.topic;
+        const difficultyMatch = state.difficulty === "all" || question.difficulty === state.difficulty;
+        const reviewMatch = state.mode !== "review" || state.missed[question.id];
+        return topicMatch && difficultyMatch && reviewMatch;
+      });
+    }
+
+    function rebuildQueue() {
+      queue = shuffle(getFilteredQuestions().map(question => question.id));
+    }
+
+    function nextQuestion() {
+      clearTimeout(autoTimer);
+      locked = false;
+      if (!queue.length) rebuildQueue();
+      if (!queue.length) {
+        currentQuestion = null;
+        renderEmptyState();
+        return;
+      }
+      const nextId = queue.shift();
+      currentQuestion = QUESTIONS.find(question => question.id === nextId);
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      dom.topicTag.textContent = currentQuestion.topic;
+      dom.difficultyTag.textContent = currentQuestion.difficulty.toUpperCase();
+      dom.difficultyTag.className = `tag level-${currentQuestion.difficulty}`;
+      dom.queueTag.textContent = `${queue.length + 1} in queue`;
+      dom.questionText.textContent = currentQuestion.question;
+      dom.sourceText.textContent = `Source: ${currentQuestion.source}`;
+      dom.feedback.innerHTML = "<strong>Choose one option.</strong><p>The answer order is shuffled every time this question appears.</p>";
+      dom.options.innerHTML = "";
+      shuffle(currentQuestion.choices).forEach(choice => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.type = "button";
+        button.textContent = choice.text;
+        button.addEventListener("click", () => answer(choice, button));
+        dom.options.appendChild(button);
+      });
+      updateStats();
+    }
+
+    function renderEmptyState() {
+      dom.topicTag.textContent = "No matches";
+      dom.difficultyTag.textContent = "Filter";
+      dom.difficultyTag.className = "tag";
+      dom.queueTag.textContent = "0 in queue";
+      dom.questionText.textContent = "No questions match the current filters.";
+      dom.sourceText.textContent = "Change topic, difficulty, or leave review mode.";
+      dom.options.innerHTML = "";
+      dom.feedback.innerHTML = "<strong>Nothing to show.</strong><p>If review mode is active, answer a few questions incorrectly first or switch back to all questions.</p>";
+      updateStats();
+    }
+
+    function answer(choice, selectedButton) {
+      if (locked || !currentQuestion) return;
+      locked = true;
+      const optionButtons = [...dom.options.querySelectorAll(".option")];
+      optionButtons.forEach(button => {
+        const matchingChoice = currentQuestion.choices.find(item => item.text === button.textContent);
+        if (matchingChoice && matchingChoice.correct) button.classList.add("correct");
+        button.disabled = true;
+      });
+      state.answered += 1;
+      const topicStat = state.topicStats[currentQuestion.topic] || { answered: 0, correct: 0 };
+      topicStat.answered += 1;
+      if (choice.correct) {
+        state.correct += 1;
+        state.streak += 1;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        topicStat.correct += 1;
+        delete state.missed[currentQuestion.id];
+        dom.feedback.innerHTML = `<strong>Correct.</strong><p>${currentQuestion.explanation}</p>`;
+      } else {
+        selectedButton.classList.add("wrong");
+        state.streak = 0;
+        state.missed[currentQuestion.id] = {
+          topic: currentQuestion.topic,
+          difficulty: currentQuestion.difficulty,
+          question: currentQuestion.question
+        };
+        dom.feedback.innerHTML = `<strong>Not this one.</strong><p>${currentQuestion.explanation}</p>`;
+      }
+      state.topicStats[currentQuestion.topic] = topicStat;
+      saveState();
+      updateStats();
+      autoTimer = setTimeout(nextQuestion, choice.correct ? 1300 : 2200);
+    }
+
+    function updateStats() {
+      const missedCount = Object.keys(state.missed).length;
+      const accuracy = state.answered ? Math.round((state.correct / state.answered) * 100) : 0;
+      dom.answeredStat.textContent = state.answered;
+      dom.scoreStat.textContent = `${accuracy}%`;
+      dom.streakStat.textContent = state.streak;
+      dom.missedStat.textContent = missedCount;
+      dom.bankSize.textContent = `${QUESTIONS.length} questions`;
+      const progress = QUESTIONS.length ? Math.min(100, Math.round((state.answered / QUESTIONS.length) * 100)) : 0;
+      dom.progressBar.style.width = `${progress}%`;
+      dom.reviewButton.textContent = state.mode === "review" ? "Review mode" : "Review missed";
+      renderTopicGrid();
+    }
+
+    function renderTopicGrid() {
+      dom.topicGrid.innerHTML = "";
+      TOPIC_CATALOG.forEach(topicInfo => {
+        const stats = state.topicStats[topicInfo.topic] || { answered: 0, correct: 0 };
+        const accuracy = stats.answered ? Math.round((stats.correct / stats.answered) * 100) : 0;
+        const card = document.createElement("div");
+        card.className = "topic-card";
+        card.innerHTML = `<b>${topicInfo.topic}</b><span>${stats.answered} answered - ${accuracy}% correct</span>`;
+        dom.topicGrid.appendChild(card);
+      });
+    }
+
+    function populateFilters() {
+      dom.topicFilter.innerHTML = '<option value="all">All topics</option>';
+      TOPIC_CATALOG.forEach(topicInfo => {
+        const option = document.createElement("option");
+        option.value = topicInfo.topic;
+        option.textContent = topicInfo.topic;
+        dom.topicFilter.appendChild(option);
+      });
+      dom.topicFilter.value = state.topic;
+      dom.difficultyFilter.value = state.difficulty;
+    }
+
+    function resetProgress() {
+      clearTimeout(autoTimer);
+      state = { ...initialState };
+      saveState();
+      populateFilters();
+      rebuildQueue();
+      nextQuestion();
+    }
+
+    dom.topicFilter.addEventListener("change", event => {
+      state.topic = event.target.value;
+      state.mode = "all";
+      saveState();
+      rebuildQueue();
+      nextQuestion();
+    });
+
+    dom.difficultyFilter.addEventListener("change", event => {
+      state.difficulty = event.target.value;
+      state.mode = "all";
+      saveState();
+      rebuildQueue();
+      nextQuestion();
+    });
+
+    dom.reviewButton.addEventListener("click", () => {
+      state.mode = state.mode === "review" ? "all" : "review";
+      saveState();
+      rebuildQueue();
+      nextQuestion();
+    });
+
+    dom.normalModeButton.addEventListener("click", () => {
+      state.mode = "all";
+      saveState();
+      rebuildQueue();
+      nextQuestion();
+    });
+
+    dom.resetButton.addEventListener("click", () => {
+      if (confirm("Reset all score, streak, and missed-question progress?")) {
+        resetProgress();
+      }
+    });
+
+    dom.nextButton.addEventListener("click", nextQuestion);
+
+    populateFilters();
+    rebuildQueue();
+    nextQuestion();
+  </script>
+</body>
+</html>

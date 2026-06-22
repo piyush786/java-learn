@@ -1411,6 +1411,33 @@
       "output-correct"
     ];
 
+    const IMPLEMENTATION_TARGETS = {
+      "Spring Cloud BOM": "Spring Cloud BOM dependency management",
+      "Eureka Server": "standalone Eureka Server setup",
+      "Eureka Client": "Eureka Client service registration",
+      "API Gateway": "Spring Cloud Gateway route configuration",
+      "Config Server": "Spring Cloud Config Server setup",
+      "Config Client": "Config Client import and naming",
+      "RestClient LoadBalancer": "load-balanced RestClient service call",
+      "OpenFeign": "OpenFeign client declaration",
+      "Resilience4j Patterns": "Resilience4j protected remote call",
+      "Resilience4j Config": "Resilience4j employeeService instance config",
+      "Resilience Order": "CircuitBreaker plus Retry behavior",
+      "TimeLimiter": "TimeLimiter async timeout handling",
+      "Actuator": "Actuator health and metrics exposure",
+      "Startup Flow": "microservices startup order",
+      "Full Request Flow": "end-to-end request flow",
+      "Project Structure": "minimum microservices demo structure",
+      "Common Mistakes": "Feign path duplication mistake"
+    };
+
+    const KIND_MEMORY_LABELS = {
+      "yaml-property": "the exact property names, nesting, and dash/camel-case spelling",
+      "code-correct": "the exact API/class/method shape used in code",
+      "annotation-correct": "the exact annotation or declaration name and attributes",
+      "output-correct": "the exact runtime URL, behavior, or resulting flow"
+    };
+
     const YAML_DRILLS = {
       "Spring Cloud BOM": [
         "<spring-cloud.version>2023.0.3</spring-cloud.version>",
@@ -1625,10 +1652,20 @@
       return unique([...values, ...fallbackValues]).slice(0, 4);
     }
 
+    function implementationTarget(topic) {
+      return IMPLEMENTATION_TARGETS[topic] || `${topic} implementation`;
+    }
+
+    function distractorGuidance(kind) {
+      const memoryLabel = KIND_MEMORY_LABELS[kind] || "the exact implementation contract";
+      return `The wrong options usually change ${memoryLabel}, repeat a path segment, use the wrong service name, move a property under the wrong parent, or use an annotation/declaration that belongs to a different Spring Cloud feature.`;
+    }
+
     function makeImplementationDrill(kind, topic, card, context, seed) {
       const yamlChoices = YAML_DRILLS[topic] || YAML_DRILLS["Common Mistakes"];
       const declarationChoices = DECLARATION_DRILLS[topic] || DECLARATION_DRILLS["Common Mistakes"];
       const outputChoices = OUTPUT_DRILLS[topic] || OUTPUT_DRILLS["Common Mistakes"];
+      const target = implementationTarget(topic);
       const codeChoices = fourChoices(
         [context.snippet, ...mutateCodeSnippet(context.snippet, seed)],
         [
@@ -1641,7 +1678,8 @@
       if (kind === "yaml-property") {
         return {
           kind,
-          question: `Which YAML property/config name is correct for ${card.focus}?`,
+          target,
+          question: `Which exact YAML property/config block is the only correct choice for ${target}?`,
           choices: withChoiceFormat(yamlChoices, "code"),
           explanationLabel: "YAML/config detail"
         };
@@ -1650,7 +1688,8 @@
       if (kind === "code-correct") {
         return {
           kind,
-          question: `Which code is correct for implementing ${card.focus}?`,
+          target,
+          question: `Which exact code snippet is the only correct implementation for ${target}?`,
           choices: withChoiceFormat(codeChoices, "code"),
           explanationLabel: "Correct code shape"
         };
@@ -1659,7 +1698,8 @@
       if (kind === "annotation-correct") {
         return {
           kind,
-          question: `Which annotation or declaration is correct for ${card.focus}?`,
+          target,
+          question: `Which exact annotation/declaration is the only correct choice for ${target}?`,
           choices: withChoiceFormat(declarationChoices, "code"),
           explanationLabel: "Annotation/declaration detail"
         };
@@ -1667,7 +1707,8 @@
 
       return {
         kind,
-        question: `Which output/result is correct for this ${topic} implementation?`,
+        target,
+        question: `Which exact output/result is the only correct expectation for ${target}?`,
         choices: withChoiceFormat(outputChoices, "text"),
         explanationLabel: "Runtime result"
       };
@@ -1690,9 +1731,11 @@
       return [
         `Correct answer: ${correct}`,
         `Question type: ${drill.explanationLabel}.`,
+        `What to memorize exactly: For ${drill.target}, memorize ${KIND_MEMORY_LABELS[drill.kind] || "the exact implementation detail"}.`,
         `Why this is correct: ${card.easy}`,
         `How to read the code/config: ${card.medium}`,
         `Real project impact: ${card.hard}`,
+        `Why distractors are wrong: ${distractorGuidance(drill.kind)}`,
         `Theory connection: ${context.theory}`,
         `Practical recall habit: identify the exact pattern, then check the service name, path, annotation name, YAML instance name, dependency, and startup order that this pattern depends on.`
       ].join("\n\n");
@@ -1715,6 +1758,7 @@
               topic: topicInfo.topic,
               difficulty,
               kind,
+              target: drill.target,
               focus: card.focus,
               question: drill.question,
               context,

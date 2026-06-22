@@ -197,9 +197,11 @@
 
     .question {
       margin: 0;
-      font-size: clamp(1.25rem, 4vw, 2rem);
-      line-height: 1.23;
+      font-size: clamp(1rem, 3vw, 1.35rem);
+      line-height: 1.35;
       letter-spacing: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
 
     .source {
@@ -265,6 +267,10 @@
       margin: 0;
       color: var(--muted);
       line-height: 1.45;
+    }
+
+    .feedback p + p {
+      margin-top: 9px;
     }
 
     .bottom-actions {
@@ -835,17 +841,31 @@
     const LEVELS = {
       easy: {
         label: "Easy",
-        question: (topic, focus) => `What should you remember about ${focus} in ${topic}?`,
+        question: (topic, focus, context) => `Code/config:
+${context.snippet}
+
+Theory link: ${context.theory}
+
+Question: In ${topic}, what should you remember about ${focus}?`,
         answer: card => card.easy
       },
       medium: {
         label: "Medium",
-        question: (topic, focus) => `Which implementation detail is correct for ${focus}?`,
+        question: (topic, focus, context) => `Code/config:
+${context.snippet}
+
+Question: Which implementation detail is correct for ${focus}?`,
         answer: card => card.medium
       },
       hard: {
         label: "Hard",
-        question: (topic, focus) => `A project issue points to ${focus}. Which decision best matches the reference?`,
+        question: (topic, focus, context) => `Scenario:
+${context.scenario}
+
+Code/config:
+${context.snippet}
+
+Question: Which fix or design choice best matches ${focus}?`,
         answer: card => card.hard
       }
     };
@@ -868,6 +888,248 @@
       "Full Request Flow": 8,
       "Project Structure": 9,
       "Common Mistakes": 8
+    };
+
+    const PRACTICAL_CONTEXTS = {
+      "Spring Cloud BOM": {
+        snippet: [
+          "<dependencyManagement>",
+          "  <dependency>",
+          "    <artifactId>spring-cloud-dependencies</artifactId>",
+          "    <version>${spring-cloud.version}</version>",
+          "    <type>pom</type>",
+          "    <scope>import</scope>",
+          "  </dependency>",
+          "</dependencyManagement>"
+        ].join("\n"),
+        scenario: "A new service compiles with different Spring Cloud starter versions than the rest of the system.",
+        theory: "Version alignment is a build-level concern before runtime patterns such as discovery or routing can work reliably."
+      },
+      "Eureka Server": {
+        snippet: [
+          "@EnableEurekaServer",
+          "@SpringBootApplication",
+          "class EurekaServerApplication {}",
+          "",
+          "eureka:",
+          "  client:",
+          "    register-with-eureka: false",
+          "    fetch-registry: false"
+        ].join("\n"),
+        scenario: "The discovery registry starts, but it appears as its own registered application in a simple standalone demo.",
+        theory: "The registry stores service instances; it is infrastructure, not a business service."
+      },
+      "Eureka Client": {
+        snippet: [
+          "spring:",
+          "  application:",
+          "    name: employee-service",
+          "eureka:",
+          "  client:",
+          "    service-url:",
+          "      defaultZone: http://localhost:8761/eureka",
+          "    register-with-eureka: true",
+          "    fetch-registry: true"
+        ].join("\n"),
+        scenario: "order-service calls http://employee-service but the name cannot be resolved at runtime.",
+        theory: "A service name is useful only when registration, registry fetching, and caller names are consistent."
+      },
+      "API Gateway": {
+        snippet: [
+          "spring:",
+          "  cloud:",
+          "    gateway:",
+          "      routes:",
+          "        - id: employee-service-route",
+          "          uri: lb://employee-service",
+          "          predicates:",
+          "            - Path=/employees/**",
+          "          filters:",
+          "            - StripPrefix=1"
+        ].join("\n"),
+        scenario: "A browser calls /employees/api/v1/employees/1 through the Gateway and the downstream controller expects /api/v1/employees/1.",
+        theory: "Gateway is the edge routing layer; discovery and filters decide where and how the request is forwarded."
+      },
+      "Config Server": {
+        snippet: [
+          "@EnableConfigServer",
+          "@SpringBootApplication",
+          "class ConfigServerApplication {}",
+          "",
+          "spring:",
+          "  cloud:",
+          "    config:",
+          "      server:",
+          "        git:",
+          "          uri: https://github.com/your-org/config-repo.git"
+        ].join("\n"),
+        scenario: "Multiple services need the same resilience thresholds, but copying YAML into each repo is becoming error-prone.",
+        theory: "Central config turns repeated service settings into versioned, shared operational configuration."
+      },
+      "Config Client": {
+        snippet: [
+          "spring:",
+          "  application:",
+          "    name: employee-service",
+          "  config:",
+          "    import: optional:configserver:http://localhost:8888"
+        ].join("\n"),
+        scenario: "employee-service starts, but values from employee-service-dev.yml never appear.",
+        theory: "Config lookup depends on the client application name and active profile matching files served by Config Server."
+      },
+      "RestClient LoadBalancer": {
+        snippet: [
+          "@Bean",
+          "@LoadBalanced",
+          "RestClient.Builder restClientBuilder() {",
+          "  return RestClient.builder();",
+          "}",
+          "",
+          "restClient.get()",
+          "  .uri(\"http://employee-service/api/v1/employees/{id}\", employeeId)",
+          "  .retrieve()",
+          "  .body(EmployeeResponse.class);"
+        ].join("\n"),
+        scenario: "A RestClient call treats employee-service like a real DNS host instead of resolving it from Eureka.",
+        theory: "A load-balanced client bridges application code and discovery so logical service names become real instances."
+      },
+      "OpenFeign": {
+        snippet: [
+          "@FeignClient(name = \"employee-service\", path = \"/api/v1/employees\")",
+          "interface EmployeeClient {",
+          "  @GetMapping(\"/{id}\")",
+          "  EmployeeResponse getEmployeeById(@PathVariable(\"id\") Long id);",
+          "",
+          "  @PostMapping",
+          "  EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request);",
+          "}"
+        ].join("\n"),
+        scenario: "A Feign call returns 404 because the generated URL is /api/v1/employees/employees.",
+        theory: "Feign is declarative HTTP; method mappings are combined with the base client path."
+      },
+      "Resilience4j Patterns": {
+        snippet: [
+          "@CircuitBreaker(name = \"employeeService\", fallbackMethod = \"employeeFallback\")",
+          "@Retry(name = \"employeeService\", fallbackMethod = \"employeeFallback\")",
+          "EmployeeResponse getEmployee(Long employeeId) {",
+          "  return employeeClient.getEmployeeById(employeeId);",
+          "}",
+          "",
+          "EmployeeResponse employeeFallback(Long employeeId, Throwable t) {",
+          "  return new EmployeeResponse(employeeId, \"Fallback Employee\", \"Service temporarily unavailable\");",
+          "}"
+        ].join("\n"),
+        scenario: "department-service is slow and sometimes unavailable, and employee-service should avoid cascading failures.",
+        theory: "Resilience patterns put boundaries around unreliable remote calls instead of assuming the network is healthy."
+      },
+      "Resilience4j Config": {
+        snippet: [
+          "resilience4j:",
+          "  circuitbreaker:",
+          "    instances:",
+          "      employeeService:",
+          "        sliding-window-size: 10",
+          "        minimum-number-of-calls: 5",
+          "        failure-rate-threshold: 50",
+          "        wait-duration-in-open-state: 30s"
+        ].join("\n"),
+        scenario: "@CircuitBreaker(name = \"employeeService\") is present, but the configured thresholds do not seem to apply.",
+        theory: "Annotation names and YAML instance names connect code-level protection to external configuration."
+      },
+      "Resilience Order": {
+        snippet: [
+          "@CircuitBreaker(name = \"employeeService\", fallbackMethod = \"fallback\")",
+          "@Retry(name = \"employeeService\", fallbackMethod = \"fallback\")",
+          "EmployeeResponse getEmployee(Long id) {",
+          "  return employeeClient.getEmployeeById(id);",
+          "}",
+          "",
+          "retry:",
+          "  instances:",
+          "    employeeService:",
+          "      max-attempts: 3"
+        ].join("\n"),
+        scenario: "A failing downstream is called several times before fallback, and traffic increases during an outage.",
+        theory: "Ordering and retry limits decide whether resilience reduces failure impact or amplifies load."
+      },
+      "TimeLimiter": {
+        snippet: [
+          "@TimeLimiter(name = \"employeeService\", fallbackMethod = \"employeeTimeoutFallback\")",
+          "CompletableFuture<EmployeeResponse> getEmployeeAsync(Long employeeId) {",
+          "  return CompletableFuture.supplyAsync(() -> employeeClient.getEmployeeById(employeeId));",
+          "}",
+          "",
+          "CompletableFuture<EmployeeResponse> employeeTimeoutFallback(Long id, Throwable t) {",
+          "  return CompletableFuture.completedFuture(new EmployeeResponse(id, \"Fallback\", \"Timeout fallback\"));",
+          "}"
+        ].join("\n"),
+        scenario: "A synchronous HTTP call can hang longer than the caller SLA, even though a TimeLimiter is configured elsewhere.",
+        theory: "Timeout control needs the right return type and HTTP client timeouts for blocking calls."
+      },
+      "Actuator": {
+        snippet: [
+          "management:",
+          "  endpoints:",
+          "    web:",
+          "      exposure:",
+          "        include: health,info,metrics,prometheus,circuitbreakers,retries",
+          "  endpoint:",
+          "    health:",
+          "      show-details: always"
+        ].join("\n"),
+        scenario: "A service is running, but the team cannot inspect health, metrics, circuit breakers, or retries.",
+        theory: "Actuator makes runtime behavior visible so microservices can be operated, not just started."
+      },
+      "Startup Flow": {
+        snippet: [
+          "1. Config Server starts",
+          "2. Eureka Server starts",
+          "3. Microservices register",
+          "4. API Gateway registers",
+          "5. Client calls Gateway",
+          "6. Gateway routes with lb://service-name"
+        ].join("\n"),
+        scenario: "The Gateway starts first, then routes fail because no services are discoverable yet.",
+        theory: "Startup order matters when services depend on external config and discovery."
+      },
+      "Full Request Flow": {
+        snippet: [
+          "Client -> API Gateway",
+          "API Gateway -> Eureka Discovery",
+          "Eureka Discovery -> Employee Service",
+          "Employee Service -> Department Service",
+          "Employee Service -> Employee Database",
+          "Employee Service -> Actuator / Metrics"
+        ].join("\n"),
+        scenario: "A request fails somewhere between the edge route, discovery lookup, service call, database access, and metrics visibility.",
+        theory: "Troubleshooting follows the request path across routing, discovery, service ownership, dependencies, and observability."
+      },
+      "Project Structure": {
+        snippet: [
+          "microservices-demo/",
+          "  eureka-server/",
+          "  config-server/",
+          "  api-gateway/",
+          "  employee-service/",
+          "  department-service/",
+          "  order-service/"
+        ].join("\n"),
+        scenario: "A demo places discovery, routing, config, and all business APIs in one module, making every pattern hard to see.",
+        theory: "Separate modules make infrastructure responsibilities and business services easier to reason about."
+      },
+      "Common Mistakes": {
+        snippet: [
+          "@FeignClient(name = \"employee-service\", path = \"/api/v1/employees\")",
+          "interface EmployeeClient {",
+          "  @PostMapping(\"/employees\")",
+          "  EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request);",
+          "}",
+          "",
+          "// Generated URL: /api/v1/employees/employees"
+        ].join("\n"),
+        scenario: "The code looks close to correct, but the runtime URL, service name, fallback signature, or resilience instance name is slightly wrong.",
+        theory: "Most microservice bugs are small contract mismatches between code, config, paths, names, and runtime behavior."
+      }
     };
 
     function stableHash(value) {
@@ -899,6 +1161,30 @@
       ];
     }
 
+    function practicalContext(topic, focus) {
+      const context = PRACTICAL_CONTEXTS[topic] || {
+        snippet: "service-a -> service-b\nconfiguration + code must agree",
+        scenario: "A microservice behavior looks correct in code but fails because a runtime contract does not match.",
+        theory: "Microservice patterns work when code, configuration, naming, routing, and observability line up."
+      };
+      return {
+        snippet: `Focus: ${focus}\n${context.snippet}`,
+        scenario: context.scenario,
+        theory: context.theory
+      };
+    }
+
+    function explainDeeply(card, topic, correct, context) {
+      return [
+        `Correct answer: ${correct}`,
+        `Why this is correct: ${card.easy}`,
+        `How to read the code/config: ${card.medium}`,
+        `Real project impact: ${card.hard}`,
+        `Theory connection: ${context.theory}`,
+        `Practical recall habit: identify the exact pattern, then check the service name, path, annotation name, YAML instance name, dependency, and startup order that this pattern depends on.`
+      ].join("\n\n");
+    }
+
     function buildQuestionBank() {
       const questions = [];
       TOPIC_CATALOG.forEach(topicInfo => {
@@ -907,13 +1193,14 @@
           Object.entries(LEVELS).forEach(([difficulty, level]) => {
             const id = `${topicInfo.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${cardIndex + 1}-${difficulty}`;
             const correct = level.answer(card);
+            const context = practicalContext(topicInfo.topic, card.focus);
             questions.push({
               id,
               topic: topicInfo.topic,
               difficulty,
-              question: level.question(topicInfo.topic, card.focus),
+              question: level.question(topicInfo.topic, card.focus, context),
               choices: makeChoices(correct, topicInfo.topic, id),
-              explanation: `${card.easy} ${card.medium} ${card.hard}`,
+              explanation: explainDeeply(card, topicInfo.topic, correct, context),
               source: topicInfo.source
             });
           });
@@ -949,30 +1236,33 @@
       topicGrid: document.getElementById("topicGrid")
     };
 
-    const initialState = {
-      answered: 0,
-      correct: 0,
-      streak: 0,
-      bestStreak: 0,
-      missed: {},
-      topicStats: {},
-      mode: "all",
-      topic: "all",
-      difficulty: "all"
-    };
+    function createInitialState() {
+      return {
+        answered: 0,
+        correct: 0,
+        streak: 0,
+        bestStreak: 0,
+        missed: {},
+        topicStats: {},
+        mode: "all",
+        topic: "all",
+        difficulty: "all"
+      };
+    }
 
     let state = loadState();
     let queue = [];
     let currentQuestion = null;
     let locked = false;
-    let autoTimer = null;
 
     function loadState() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        return saved ? { ...initialState, ...saved } : { ...initialState };
+        return saved
+          ? { ...createInitialState(), ...saved, missed: saved.missed || {}, topicStats: saved.topicStats || {} }
+          : createInitialState();
       } catch (error) {
-        return { ...initialState };
+        return createInitialState();
       }
     }
 
@@ -1003,7 +1293,6 @@
     }
 
     function nextQuestion() {
-      clearTimeout(autoTimer);
       locked = false;
       if (!queue.length) rebuildQueue();
       if (!queue.length) {
@@ -1036,6 +1325,23 @@
       updateStats();
     }
 
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderFeedback(title, explanation) {
+      const paragraphs = explanation
+        .split("\n\n")
+        .map(part => `<p>${escapeHtml(part)}</p>`)
+        .join("");
+      dom.feedback.innerHTML = `<strong>${escapeHtml(title)}</strong>${paragraphs}<p>Press Next question when you are ready to continue.</p>`;
+    }
+
     function renderEmptyState() {
       dom.topicTag.textContent = "No matches";
       dom.difficultyTag.textContent = "Filter";
@@ -1066,7 +1372,7 @@
         state.bestStreak = Math.max(state.bestStreak, state.streak);
         topicStat.correct += 1;
         delete state.missed[currentQuestion.id];
-        dom.feedback.innerHTML = `<strong>Correct.</strong><p>${currentQuestion.explanation}</p>`;
+        renderFeedback("Correct.", currentQuestion.explanation);
       } else {
         selectedButton.classList.add("wrong");
         state.streak = 0;
@@ -1075,12 +1381,11 @@
           difficulty: currentQuestion.difficulty,
           question: currentQuestion.question
         };
-        dom.feedback.innerHTML = `<strong>Not this one.</strong><p>${currentQuestion.explanation}</p>`;
+        renderFeedback("Not this one.", currentQuestion.explanation);
       }
       state.topicStats[currentQuestion.topic] = topicStat;
       saveState();
       updateStats();
-      autoTimer = setTimeout(nextQuestion, choice.correct ? 1300 : 2200);
     }
 
     function updateStats() {
@@ -1122,8 +1427,7 @@
     }
 
     function resetProgress() {
-      clearTimeout(autoTimer);
-      state = { ...initialState };
+      state = createInitialState();
       saveState();
       populateFilters();
       rebuildQueue();

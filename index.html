@@ -7,18 +7,22 @@
   <style>
     :root {
       color-scheme: light;
-      --page: #f7f7f4;
-      --ink: #18202a;
-      --muted: #607080;
-      --line: #d9ded8;
+      --page: #f5f7fb;
+      --ink: #17202c;
+      --muted: #637083;
+      --line: #d8e0ea;
       --panel: #ffffff;
       --teal: #0f766e;
       --teal-ink: #064e48;
       --amber: #b45309;
+      --amber-soft: #fff4df;
       --red: #b42318;
       --green: #1b6b35;
       --blue: #244c8f;
-      --shadow: 0 18px 42px rgba(31, 41, 55, 0.12);
+      --cyan-soft: #e7f6f4;
+      --code: #0b1220;
+      --shadow: 0 20px 50px rgba(24, 32, 42, 0.12);
+      --soft-shadow: 0 10px 26px rgba(24, 32, 42, 0.08);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -30,7 +34,8 @@
       margin: 0;
       min-height: 100vh;
       background:
-        linear-gradient(180deg, rgba(15, 118, 110, 0.07), rgba(180, 83, 9, 0.04) 42%, transparent 72%),
+        linear-gradient(135deg, rgba(15, 118, 110, 0.09), rgba(36, 76, 143, 0.05) 42%, rgba(180, 83, 9, 0.08)),
+        linear-gradient(180deg, #fbfcff, var(--page)),
         var(--page);
       color: var(--ink);
     }
@@ -44,17 +49,24 @@
       cursor: pointer;
     }
 
-    .app {
-      width: min(100%, 920px);
+    .shell {
+      width: min(100%, 1080px);
       margin: 0 auto;
-      padding: 14px;
+      padding: 16px;
     }
 
     .topbar {
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
-      padding: 10px 0 12px;
+      padding: 16px;
+      margin: 0 0 12px;
+      border: 1px solid rgba(216, 224, 234, 0.92);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(231, 246, 244, 0.78)),
+        var(--panel);
+      box-shadow: var(--soft-shadow);
     }
 
     .brand {
@@ -85,8 +97,9 @@
       padding: 6px 10px;
       border: 1px solid var(--line);
       border-radius: 999px;
-      background: #fff;
-      color: var(--teal-ink);
+      background: var(--code);
+      border-color: var(--code);
+      color: #f8fbff;
       font-size: 0.82rem;
       font-weight: 750;
       white-space: nowrap;
@@ -101,9 +114,10 @@
     .stat {
       min-width: 0;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 8px;
       padding: 9px;
+      box-shadow: 0 6px 16px rgba(24, 32, 42, 0.05);
     }
 
     .stat strong {
@@ -136,10 +150,19 @@
       background: var(--panel);
       color: var(--ink);
       padding: 8px 10px;
+      box-shadow: 0 6px 14px rgba(24, 32, 42, 0.05);
     }
 
     .action {
       font-weight: 750;
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .action:hover,
+    .action:focus-visible {
+      border-color: rgba(15, 118, 110, 0.55);
+      box-shadow: 0 10px 20px rgba(15, 118, 110, 0.12);
+      transform: translateY(-1px);
     }
 
     .action.primary {
@@ -153,11 +176,11 @@
     }
 
     .quiz {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.97);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
-      padding: 14px;
+      padding: 16px;
       overflow: hidden;
     }
 
@@ -200,8 +223,85 @@
       font-size: clamp(1rem, 3vw, 1.35rem);
       line-height: 1.35;
       letter-spacing: 0;
-      white-space: pre-wrap;
       overflow-wrap: anywhere;
+    }
+
+    .questionStack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .questionPrompt {
+      border-left: 4px solid var(--teal);
+      padding: 2px 0 2px 12px;
+      font-size: clamp(1.05rem, 3vw, 1.45rem);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .contextPanel,
+    .theoryNote,
+    .codePanel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fbfdff;
+    }
+
+    .contextPanel {
+      padding: 12px;
+      background: var(--amber-soft);
+      border-color: #f0d6ad;
+    }
+
+    .contextPanel span,
+    .codeHeader,
+    .theoryNote b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .contextPanel p,
+    .theoryNote span {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .codeHeader {
+      margin: 0;
+      padding: 10px 12px;
+      background: #152133;
+      color: #dbeafe;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .codeBlock {
+      margin: 0;
+      padding: 14px;
+      max-width: 100%;
+      overflow-x: auto;
+      background: #0b1220;
+      color: #e5edf7;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.58;
+      tab-size: 2;
+    }
+
+    .codeBlock code {
+      font: inherit;
+      white-space: pre;
+    }
+
+    .theoryNote {
+      padding: 12px;
+      background: var(--cyan-soft);
+      border-color: #bfe6df;
     }
 
     .source {
@@ -222,19 +322,23 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fbfcfb;
+      background: #fbfdff;
       color: var(--ink);
       padding: 12px;
       text-align: left;
       line-height: 1.35;
       font-weight: 680;
       overflow-wrap: anywhere;
+      box-shadow: 0 8px 16px rgba(24, 32, 42, 0.05);
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
     }
 
     .option:hover,
     .option:focus-visible {
       border-color: var(--teal);
       outline: 3px solid rgba(15, 118, 110, 0.16);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(15, 118, 110, 0.1);
     }
 
     .option.correct {
@@ -255,7 +359,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 12px;
-      background: #fbfcfb;
+      background: #fbfdff;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     }
 
     .feedback strong {
@@ -328,7 +433,7 @@
     }
 
     @media (min-width: 720px) {
-      .app {
+      .shell {
         padding: 24px;
       }
 
@@ -342,7 +447,7 @@
       }
 
       .quiz {
-        padding: 22px;
+        padding: 24px;
       }
 
       .options {
@@ -355,7 +460,7 @@
     }
 
     @media (max-width: 420px) {
-      .app {
+      .shell {
         padding: 10px;
       }
 
@@ -377,7 +482,7 @@
   </style>
 </head>
 <body>
-  <main class="app">
+  <main class="shell">
     <section class="topbar" aria-label="Study overview">
       <div>
         <div class="brand">
@@ -414,7 +519,7 @@
         <span class="tag" id="difficultyTag">Level</span>
         <span class="tag" id="queueTag">Queue</span>
       </div>
-      <h2 class="question" id="questionText">Loading question...</h2>
+      <div class="question" id="questionText">Loading question...</div>
       <p class="source" id="sourceText"></p>
       <div class="options" id="options"></div>
       <div class="feedback" id="feedback">
@@ -841,31 +946,17 @@
     const LEVELS = {
       easy: {
         label: "Easy",
-        question: (topic, focus, context) => `Code/config:
-${context.snippet}
-
-Theory link: ${context.theory}
-
-Question: In ${topic}, what should you remember about ${focus}?`,
+        question: (topic, focus) => `In ${topic}, what should you remember about ${focus}?`,
         answer: card => card.easy
       },
       medium: {
         label: "Medium",
-        question: (topic, focus, context) => `Code/config:
-${context.snippet}
-
-Question: Which implementation detail is correct for ${focus}?`,
+        question: (topic, focus) => `Which implementation detail is correct for ${focus}?`,
         answer: card => card.medium
       },
       hard: {
         label: "Hard",
-        question: (topic, focus, context) => `Scenario:
-${context.scenario}
-
-Code/config:
-${context.snippet}
-
-Question: Which fix or design choice best matches ${focus}?`,
+        question: (topic, focus) => `Which fix or design choice best matches ${focus}?`,
         answer: card => card.hard
       }
     };
@@ -1198,7 +1289,9 @@ Question: Which fix or design choice best matches ${focus}?`,
               id,
               topic: topicInfo.topic,
               difficulty,
+              focus: card.focus,
               question: level.question(topicInfo.topic, card.focus, context),
+              context,
               choices: makeChoices(correct, topicInfo.topic, id),
               explanation: explainDeeply(card, topicInfo.topic, correct, context),
               source: topicInfo.source
@@ -1310,7 +1403,7 @@ Question: Which fix or design choice best matches ${focus}?`,
       dom.difficultyTag.textContent = currentQuestion.difficulty.toUpperCase();
       dom.difficultyTag.className = `tag level-${currentQuestion.difficulty}`;
       dom.queueTag.textContent = `${queue.length + 1} in queue`;
-      dom.questionText.textContent = currentQuestion.question;
+      dom.questionText.innerHTML = renderQuestionContent(currentQuestion);
       dom.sourceText.textContent = `Source: ${currentQuestion.source}`;
       dom.feedback.innerHTML = "<strong>Choose one option.</strong><p>The answer order is shuffled every time this question appears.</p>";
       dom.options.innerHTML = "";
@@ -1332,6 +1425,28 @@ Question: Which fix or design choice best matches ${focus}?`,
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+
+    function renderQuestionContent(question) {
+      const context = question.context || {};
+      const scenario = question.difficulty === "hard" && context.scenario
+        ? `<section class="contextPanel"><span>Scenario</span><p>${escapeHtml(context.scenario)}</p></section>`
+        : "";
+      const theory = context.theory
+        ? `<section class="theoryNote"><b>Theory link</b><span>${escapeHtml(context.theory)}</span></section>`
+        : "";
+      const snippet = context.snippet || "";
+      return `
+        <div class="questionStack">
+          ${scenario}
+          <section class="questionPrompt">${escapeHtml(question.question)}</section>
+          <section class="codePanel">
+            <span class="codeHeader">Code/config</span>
+            <pre class="codeBlock"><code>${escapeHtml(snippet)}</code></pre>
+          </section>
+          ${theory}
+        </div>
+      `;
     }
 
     function renderFeedback(title, explanation) {

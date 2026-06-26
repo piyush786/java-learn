@@ -1370,20 +1370,6 @@ If Spring Security is used, learn these:
 - `@PostAuthorize`
 - `@AuthenticationPrincipal`
 
-## 20. Quick Correction Table
-
-| You Wrote | Correct / Preferred |
-|---|---|
-| `@Respository` | `@Repository` |
-| `CommadLineRnner` | `CommandLineRunner` |
-| `@RequestMappiong` | `@RequestMapping` |
-| `@postMapping` | `@PostMapping` |
-| `@PathParam` | Prefer `@PathVariable` in Spring MVC |
-| `MethodArgumentNotValid ex` | `MethodArgumentNotValidException ex` |
-| `getbinding result` | `getBindingResult()` |
-| `@Cache Evict` | `@CacheEvict` |
-| `@min`, `@max` | `@Min`, `@Max` |
-
 ## 21. One Complete Mini Example
 
 ```java

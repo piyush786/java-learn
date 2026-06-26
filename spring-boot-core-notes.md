@@ -1351,25 +1351,6 @@ public UserResponse getUser(
 }
 ```
 
-### Testing Annotations
-
-These are very common in Spring Boot projects:
-
-- `@SpringBootTest`: loads full application context.
-- `@WebMvcTest`: tests only MVC/controller layer.
-- `@DataJpaTest`: tests JPA repositories.
-- `@MockBean`: replaces a Spring bean with a Mockito mock.
-- `@TestConfiguration`: test-only configuration.
-
-### Security Annotations
-
-If Spring Security is used, learn these:
-
-- `@EnableWebSecurity`
-- `@PreAuthorize`
-- `@PostAuthorize`
-- `@AuthenticationPrincipal`
-
 ## 21. One Complete Mini Example
 
 ```java

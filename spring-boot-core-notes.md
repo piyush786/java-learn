@@ -1297,13 +1297,42 @@ public record UserResponse(
 }
 ```
 
-### Pagination
+### Pagination, Page-Based, Cursor-Based, And N+1 Problem
 
-Common for list APIs.
+Pagination means returning a list in small parts instead of returning all rows at once.
+
+Use pagination for:
+
+- Large database tables
+- Search result pages
+- Admin list screens
+- Infinite scroll APIs
+- Mobile APIs where response size matters
+
+There are two common styles:
+
+- Page-based pagination
+- Cursor-based pagination
+
+#### Page-Based Pagination
+
+Page-based pagination uses `page`, `size`, and usually `sort`.
+
+Example request:
+
+```text
+GET /api/users?page=0&size=20&sort=createdAt,desc
+```
+
+Important rule: Spring Data page numbers start from `0`, not `1`.
+
+Controller example:
 
 ```java
 @GetMapping
-public Page<UserResponse> listUsers(Pageable pageable) {
+public Page<UserResponse> listUsers(
+        @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+        Pageable pageable) {
     return userService.findAll(pageable);
 }
 ```
@@ -1312,6 +1341,287 @@ Useful annotations:
 
 - `@PageableDefault`
 - `@SortDefault`
+
+Imports:
+
+```java
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
+```
+
+Repository example:
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+    Page<User> findByStatus(UserStatus status, Pageable pageable);
+}
+```
+
+Service example:
+
+```java
+@Transactional(readOnly = true)
+public Page<UserResponse> findUsers(UserStatus status, Pageable pageable) {
+    return userRepository.findByStatus(status, pageable)
+            .map(user -> new UserResponse(user.getId(), user.getName(), user.getEmail()));
+}
+```
+
+If you do not want to expose Spring's `Page` JSON directly, create your own response:
+
+```java
+public record PageResponse<T>(
+        List<T> content,
+        int page,
+        int size,
+        long totalElements,
+        int totalPages,
+        boolean first,
+        boolean last) {
+
+    public static <T> PageResponse<T> from(Page<T> page) {
+        return new PageResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isFirst(),
+                page.isLast());
+    }
+}
+```
+
+Page-based pagination is easy for UI screens where users jump to page 1, 2, 3, and so on.
+
+Drawbacks:
+
+- Deep pages can become slow because the database must skip many rows.
+- New inserts or deletes can shift results between pages.
+- Counting total rows can be expensive for large tables.
+
+#### `Page` Vs `Slice`
+
+`Page<T>` includes total count information.
+
+`Slice<T>` only knows whether there is a next slice.
+
+Use `Page<T>` when the UI needs total pages.
+
+Use `Slice<T>` when you only need "load more".
+
+```java
+Slice<User> findByStatus(UserStatus status, Pageable pageable);
+```
+
+#### Cursor-Based Pagination
+
+Cursor-based pagination uses the last seen value as the starting point for the next request.
+
+Example first request:
+
+```text
+GET /api/users?size=20
+```
+
+Example next request:
+
+```text
+GET /api/users?size=20&afterId=105
+```
+
+Repository example:
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    List<User> findTop20ByIdGreaterThanOrderByIdAsc(Long afterId);
+}
+```
+
+More flexible query:
+
+```java
+@Query("""
+        select u
+        from User u
+        where (:afterId is null or u.id > :afterId)
+        order by u.id asc
+        """)
+List<User> findNextUsers(@Param("afterId") Long afterId, Pageable pageable);
+```
+
+Controller example:
+
+```java
+@GetMapping("/cursor")
+public CursorResponse<UserResponse> listUsersByCursor(
+        @RequestParam(required = false) Long afterId,
+        @RequestParam(defaultValue = "20") int size) {
+    return userService.findUsersByCursor(afterId, size);
+}
+```
+
+Service example:
+
+```java
+@Transactional(readOnly = true)
+public CursorResponse<UserResponse> findUsersByCursor(Long afterId, int size) {
+    Pageable limit = PageRequest.of(0, size + 1);
+    List<User> users = userRepository.findNextUsers(afterId, limit);
+
+    boolean hasNext = users.size() > size;
+    List<User> visibleUsers = hasNext ? users.subList(0, size) : users;
+
+    Long nextCursor = visibleUsers.isEmpty()
+            ? null
+            : visibleUsers.get(visibleUsers.size() - 1).getId();
+
+    List<UserResponse> content = visibleUsers.stream()
+            .map(user -> new UserResponse(user.getId(), user.getName(), user.getEmail()))
+            .toList();
+
+    return new CursorResponse<>(content, nextCursor, hasNext);
+}
+```
+
+Cursor response DTO:
+
+```java
+public record CursorResponse<T>(
+        List<T> content,
+        Long nextCursor,
+        boolean hasNext) {
+}
+```
+
+Cursor-based pagination is best for:
+
+- Infinite scroll
+- Large tables
+- Fast "next page" APIs
+- Feeds sorted by stable values like `id` or `createdAt`
+
+Cursor rules:
+
+- Always sort by a stable column.
+- Prefer indexed columns like `id`, `createdAt`, or `(createdAt, id)`.
+- Do not use unstable ordering like random order.
+- Return `hasNext` and `nextCursor`.
+
+#### Page-Based Vs Cursor-Based
+
+| Topic | Page-Based | Cursor-Based |
+|---|---|---|
+| Request | `page=2&size=20` | `afterId=105&size=20` |
+| Best for | Admin tables | Infinite scroll |
+| Jump to page | Easy | Hard |
+| Deep page performance | Can be slow | Usually fast |
+| Total count | Easy with `Page<T>` | Usually not included |
+| Data changing during browsing | Can duplicate or skip rows | More stable |
+
+#### N+1 Query Problem
+
+The N+1 problem happens when one query loads parent records, then one extra query runs for each parent record.
+
+Example:
+
+```text
+1 query loads 20 users
+20 extra queries load orders for each user
+Total = 21 queries
+```
+
+Entity example:
+
+```java
+@Entity
+public class User {
+    @Id
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<>();
+}
+```
+
+Problem code:
+
+```java
+@Transactional(readOnly = true)
+public List<UserOrderResponse> findUsersWithOrders() {
+    List<User> users = userRepository.findAll();
+
+    return users.stream()
+            .map(user -> new UserOrderResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getOrders().size()))
+            .toList();
+}
+```
+
+`user.getOrders().size()` can trigger one extra query per user.
+
+Fix 1: Use `@EntityGraph`.
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    @EntityGraph(attributePaths = "orders")
+    List<User> findByStatus(UserStatus status);
+}
+```
+
+Fix 2: Use a JPQL fetch join.
+
+```java
+@Query("""
+        select distinct u
+        from User u
+        left join fetch u.orders
+        where u.status = :status
+        """)
+List<User> findUsersWithOrders(@Param("status") UserStatus status);
+```
+
+Fix 3: Use DTO projection when you only need selected fields.
+
+```java
+@Query("""
+        select new com.example.demo.user.UserOrderCountResponse(
+            u.id,
+            u.name,
+            count(o.id)
+        )
+        from User u
+        left join u.orders o
+        group by u.id, u.name
+        """)
+List<UserOrderCountResponse> findUserOrderCounts();
+```
+
+DTO:
+
+```java
+public record UserOrderCountResponse(
+        Long userId,
+        String name,
+        long orderCount) {
+}
+```
+
+N+1 prevention checklist:
+
+- Do not return JPA entities directly from controllers.
+- Map entities to DTOs inside the service layer.
+- Watch SQL logs when adding list endpoints.
+- Use `@EntityGraph`, fetch joins, or DTO projections.
+- Be careful with pagination plus `join fetch` on collections; prefer DTO projections or a two-step query for large paged lists.
 
 ### OpenAPI / Swagger
 

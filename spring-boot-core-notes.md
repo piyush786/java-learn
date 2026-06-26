@@ -1315,18 +1315,125 @@ Useful annotations:
 
 ### OpenAPI / Swagger
 
-Useful for documenting APIs.
+OpenAPI documents REST APIs in a standard JSON format. Swagger UI reads that OpenAPI document and gives you a browser page where you can inspect and test endpoints.
 
-Common dependency:
+Common Spring Boot dependency:
 
-```text
-springdoc-openapi-starter-webmvc-ui
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.8.17</version>
+</dependency>
 ```
 
-Useful annotations:
+For a Spring WebFlux app, use:
+
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+    <version>2.8.17</version>
+</dependency>
+```
+
+Default URLs after starting the app:
+
+```text
+http://localhost:8080/swagger-ui.html
+http://localhost:8080/v3/api-docs
+```
+
+Optional `application.properties` configuration:
+
+```properties
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.operations-sorter=method
+springdoc.swagger-ui.tags-sorter=alpha
+```
+
+If you customize `springdoc.api-docs.path=/api-docs`, the JSON documentation moves to `http://localhost:8080/api-docs`.
+
+Basic OpenAPI configuration class:
+
+```java
+package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI applicationOpenApi() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("User API")
+                        .description("Spring Boot API documentation")
+                        .version("v1")
+                        .contact(new Contact()
+                                .name("API Support")
+                                .email("support@example.com"))
+                        .license(new License()
+                                .name("Apache 2.0")
+                                .url("https://www.apache.org/licenses/LICENSE-2.0")));
+    }
+}
+```
+
+Controller documentation example:
+
+```java
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/users")
+@Tag(name = "Users", description = "User management APIs")
+public class UserController {
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get user by ID", description = "Returns one user for the given ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<UserResponse> getUser(@PathVariable long id) {
+        return ResponseEntity.ok(new UserResponse(id, "Piyush", "piyush@example.com"));
+    }
+}
+```
+
+DTO schema example:
+
+```java
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record UserResponse(
+        @Schema(example = "1") long id,
+        @Schema(example = "Piyush") String name,
+        @Schema(example = "piyush@example.com") String email) {
+}
+```
+
+Useful OpenAPI annotations:
 
 - `@Operation`
 - `@ApiResponse`
+- `@ApiResponses`
 - `@Tag`
 - `@Schema`
 

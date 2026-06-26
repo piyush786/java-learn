@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Spring Microservices Notes</title>
+  <title>Spring Boot Core Notes</title>
   <style>
     :root {
       color-scheme: dark;
@@ -153,6 +153,7 @@
     .layout {
       display: grid;
       gap: 14px;
+      min-width: 0;
     }
 
     .toc {
@@ -161,6 +162,8 @@
       background: rgba(16, 27, 45, 0.94);
       box-shadow: var(--soft-shadow);
       padding: 14px;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .toc h2 {
@@ -172,6 +175,8 @@
     .tocList {
       display: flex;
       gap: 8px;
+      max-width: 100%;
+      min-width: 0;
       overflow-x: auto;
       padding-bottom: 4px;
       scrollbar-color: var(--line) transparent;
@@ -203,6 +208,7 @@
       border-radius: 8px;
       background: rgba(16, 27, 45, 0.97);
       box-shadow: var(--shadow);
+      min-width: 0;
       overflow: hidden;
     }
 
@@ -392,8 +398,8 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <h1>Spring Boot Microservices Notes</h1>
-        <p class="subtitle">A dark-mode reader for the complete Spring Boot microservices patterns reference.</p>
+        <h1>Spring Boot Core Notes</h1>
+        <p class="subtitle">Chapter 1 covers core Spring Boot annotations and runtime features. Chapter 2 keeps the older microservices patterns notes.</p>
       </div>
 
       <div class="toolbar">
@@ -406,7 +412,8 @@
         >
         <div class="statusRow">
           <span id="notesStatus" class="pill">Loading notes</span>
-          <a class="rawLink" href="spring-boot-microservices-patterns.md">Open Markdown</a>
+          <a class="rawLink" href="spring-boot-core-notes.md">Chapter 1 Markdown</a>
+          <a class="rawLink" href="spring-boot-microservices-patterns.md">Chapter 2 Markdown</a>
         </div>
       </div>
     </header>
@@ -473,14 +480,14 @@
 
     function splitSections(markdown) {
       const normalized = markdown.replace(/\r\n/g, "\n");
-      const parts = normalized.split(/\n(?=##\s+)/);
-      const intro = parts[0] && !parts[0].startsWith("## ") ? parts[0] : "";
-      const sections = parts.filter(part => part.startsWith("## "));
+      const parts = normalized.split(/\n(?=#{1,2}\s+)/);
+      const intro = parts[0] && !/^#{1,2}\s+/.test(parts[0]) ? parts[0] : "";
+      const sections = parts.filter(part => /^#{1,2}\s+/.test(part));
       return { intro, sections };
     }
 
     function sectionTitle(section) {
-      const match = section.match(/^##\s+(.+)$/m);
+      const match = section.match(/^#{1,2}\s+(.+)$/m);
       return match ? match[1].trim() : "Notes";
     }
 
@@ -547,7 +554,7 @@
         if (heading) {
           const level = heading[1].length;
           const title = heading[2].trim();
-          const id = level === 2 ? uniqueHeadingId(title) : "";
+          const id = level <= 2 ? uniqueHeadingId(title) : "";
           const idAttr = id ? ` id="${id}"` : "";
           html.push(`<h${level}${idAttr}>${renderInlineMarkdown(title)}</h${level}>`);
           index += 1;
@@ -627,13 +634,21 @@
 
     async function loadReferenceMarkdown() {
       try {
-        const response = await fetch("spring-boot-microservices-patterns.md", { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        referenceMarkdown = await response.text();
+        const [chapterOneResponse, chapterTwoResponse] = await Promise.all([
+          fetch("spring-boot-core-notes.md", { cache: "no-store" }),
+          fetch("spring-boot-microservices-patterns.md", { cache: "no-store" })
+        ]);
+
+        if (!chapterOneResponse.ok) throw new Error(`Chapter 1 HTTP ${chapterOneResponse.status}`);
+        if (!chapterTwoResponse.ok) throw new Error(`Chapter 2 HTTP ${chapterTwoResponse.status}`);
+
+        const chapterOneMarkdown = await chapterOneResponse.text();
+        const chapterTwoMarkdown = await chapterTwoResponse.text();
+        referenceMarkdown = `${chapterOneMarkdown}\n\n---\n\n# Chapter 2: Old Notes\n\n${chapterTwoMarkdown}`;
         renderReference();
       } catch (error) {
         dom.notesStatus.textContent = "Load failed";
-        dom.referenceContent.innerHTML = '<div class="emptyState">Could not load the Markdown file. Try opening <a href="spring-boot-microservices-patterns.md">the raw Markdown notes</a>.</div>';
+        dom.referenceContent.innerHTML = '<div class="emptyState">Could not load the Markdown files. Try opening <a href="spring-boot-core-notes.md">Chapter 1 Markdown</a> or <a href="spring-boot-microservices-patterns.md">Chapter 2 Markdown</a>.</div>';
         dom.tocList.innerHTML = '<span class="pill">Unavailable</span>';
       }
     }

@@ -1213,7 +1213,7 @@ public ExternalClient externalClient() {
 }
 ```
 
-## 19. Categories
+## 19. Dependency Injection
 
 ### Dependency Injection
 

@@ -1213,7 +1213,7 @@ public ExternalClient externalClient() {
 }
 ```
 
-## 19. Missing But Important Spring Boot Topics
+## 19. Categories
 
 ### Dependency Injection
 

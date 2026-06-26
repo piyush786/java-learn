@@ -1280,7 +1280,55 @@ public class EmailSender implements MessageSender {
 }
 ```
 
-### `@RequestBody` Plus Records
+### Java Records And Usage
+
+Records are immutable data-carrier classes. They are useful when a class only needs to hold data and expose that data clearly.
+
+Normal class:
+
+```java
+public class UserResponse {
+    private final long id;
+    private final String name;
+    private final String email;
+
+    public UserResponse(long id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
+```
+
+Record version:
+
+```java
+public record UserResponse(
+        long id,
+        String name,
+        String email) {
+}
+```
+
+Java automatically creates:
+
+- Constructor
+- Accessor methods like `id()`, `name()`, and `email()`
+- `equals()`
+- `hashCode()`
+- `toString()`
 
 Records are excellent for request and response DTOs.
 
@@ -1296,6 +1344,146 @@ public record UserResponse(
         String email) {
 }
 ```
+
+Controller usage:
+
+```java
+@PostMapping
+public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
+    UserResponse response = userService.createUser(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+}
+```
+
+Important: record fields are accessed by method name, not `getName()`.
+
+```java
+String name = request.name();
+String email = request.email();
+```
+
+#### Records With Validation
+
+Validation annotations can be placed directly on record components.
+
+```java
+public record RegisterUserRequest(
+        @NotBlank String name,
+        @Email @NotBlank String email,
+        @Min(18) Integer age) {
+}
+```
+
+Nested validation:
+
+```java
+public record CreateOrderRequest(
+        @NotNull Long customerId,
+        @Valid @NotEmpty List<OrderItemRequest> items) {
+}
+
+public record OrderItemRequest(
+        @NotNull Long productId,
+        @Positive int quantity) {
+}
+```
+
+Use `@Valid` on the nested record or list so Spring validates inside it.
+
+#### Records With Compact Constructors
+
+A compact constructor lets you add simple rules while keeping the record short.
+
+```java
+public record Money(
+        BigDecimal amount,
+        String currency) {
+
+    public Money {
+        if (amount == null || amount.signum() < 0) {
+            throw new IllegalArgumentException("Amount must be zero or positive");
+        }
+        if (currency == null || currency.isBlank()) {
+            throw new IllegalArgumentException("Currency is required");
+        }
+        currency = currency.toUpperCase();
+    }
+}
+```
+
+Use compact constructors for small invariants. For request validation, prefer Bean Validation annotations like `@NotBlank`, `@Min`, and `@Valid`.
+
+#### Records For Configuration Properties
+
+Records work well with `@ConfigurationProperties`.
+
+```java
+@ConfigurationProperties(prefix = "payment")
+public record PaymentProperties(
+        String provider,
+        int timeoutSeconds,
+        int retryCount) {
+}
+```
+
+`application.properties`:
+
+```properties
+payment.provider=stripe
+payment.timeout-seconds=5
+payment.retry-count=3
+```
+
+#### Records With Jackson JSON
+
+Jackson can serialize and deserialize records in Spring Boot.
+
+```java
+public record UserJsonResponse(
+        @JsonProperty("user_id") long userId,
+        @JsonInclude(JsonInclude.Include.NON_NULL) String displayName,
+        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate createdDate) {
+}
+```
+
+#### Records For API Error Responses
+
+Records are good for consistent API error bodies.
+
+```java
+public record ApiErrorResponse(
+        String code,
+        String message,
+        Instant timestamp,
+        List<FieldValidationError> fieldErrors) {
+}
+
+public record FieldValidationError(
+        String field,
+        String message) {
+}
+```
+
+#### When To Use Records
+
+Use records for:
+
+- Request DTOs
+- Response DTOs
+- Configuration properties
+- API error response models
+- Simple projection results
+- Value objects with small validation rules
+
+Avoid records for:
+
+- JPA entities
+- Classes that need mutable state
+- Classes with complex behavior
+- Classes requiring inheritance
+- Objects that frameworks must modify through setters
+
+JPA entities should usually remain normal classes because JPA needs identity, lifecycle, proxies, and often a no-argument constructor.
 
 ### Pagination, Page-Based, Cursor-Based, And N+1 Problem
 

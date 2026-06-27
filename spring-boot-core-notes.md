@@ -1485,7 +1485,7 @@ Avoid records for:
 
 JPA entities should usually remain normal classes because JPA needs identity, lifecycle, proxies, and often a no-argument constructor.
 
-### Pagination, Page-Based, Cursor-Based, And N+1 Problem
+## 20. Pagination, Page-Based, Cursor-Based, And N+1 Problem
 
 Pagination means returning a list in small parts instead of returning all rows at once.
 
@@ -1502,7 +1502,7 @@ There are two common styles:
 - Page-based pagination
 - Cursor-based pagination
 
-#### Page-Based Pagination
+### Page-Based Pagination
 
 Page-based pagination uses `page`, `size`, and usually `sort`.
 
@@ -1590,7 +1590,7 @@ Drawbacks:
 - New inserts or deletes can shift results between pages.
 - Counting total rows can be expensive for large tables.
 
-#### `Page` Vs `Slice`
+### `Page` Vs `Slice`
 
 `Page<T>` includes total count information.
 
@@ -1604,7 +1604,7 @@ Use `Slice<T>` when you only need "load more".
 Slice<User> findByStatus(UserStatus status, Pageable pageable);
 ```
 
-#### Cursor-Based Pagination
+### Cursor-Based Pagination
 
 Cursor-based pagination uses the last seen value as the starting point for the next request.
 
@@ -1699,7 +1699,7 @@ Cursor rules:
 - Do not use unstable ordering like random order.
 - Return `hasNext` and `nextCursor`.
 
-#### Page-Based Vs Cursor-Based
+### Page-Based Vs Cursor-Based
 
 | Topic | Page-Based | Cursor-Based |
 |---|---|---|
@@ -1710,7 +1710,7 @@ Cursor rules:
 | Total count | Easy with `Page<T>` | Usually not included |
 | Data changing during browsing | Can duplicate or skip rows | More stable |
 
-#### N+1 Query Problem
+### N+1 Query Problem
 
 The N+1 problem happens when one query loads parent records, then one extra query runs for each parent record.
 
@@ -1811,7 +1811,7 @@ N+1 prevention checklist:
 - Use `@EntityGraph`, fetch joins, or DTO projections.
 - Be careful with pagination plus `join fetch` on collections; prefer DTO projections or a two-step query for large paged lists.
 
-### OpenAPI / Swagger
+## 21. OpenAPI / Swagger
 
 OpenAPI documents REST APIs in a standard JSON format. Swagger UI reads that OpenAPI document and gives you a browser page where you can inspect and test endpoints.
 
@@ -1935,7 +1935,7 @@ Useful OpenAPI annotations:
 - `@Tag`
 - `@Schema`
 
-### Logging And Correlation IDs
+## 22. Logging And Correlation IDs
 
 For real APIs, use request IDs to trace logs.
 
@@ -1956,7 +1956,7 @@ public UserResponse getUser(
 }
 ```
 
-## 21. One Complete Mini Example
+## 23. One Complete Mini Example
 
 ```java
 package com.example.demo.user;
@@ -2085,7 +2085,7 @@ record FieldValidationError(
 }
 ```
 
-## 22. Memory Tips
+## 24. Memory Tips
 
 - `@SpringBootApplication` starts the app and scans components.
 - `@Configuration` plus `@Bean` manually creates beans.

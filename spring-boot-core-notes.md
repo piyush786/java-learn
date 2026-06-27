@@ -1280,7 +1280,7 @@ public class EmailSender implements MessageSender {
 }
 ```
 
-### Java Records And Usage
+## 20. Java Records And Usage
 
 Records are immutable data-carrier classes. They are useful when a class only needs to hold data and expose that data clearly.
 
@@ -1362,7 +1362,7 @@ String name = request.name();
 String email = request.email();
 ```
 
-#### Records With Validation
+### Records With Validation
 
 Validation annotations can be placed directly on record components.
 
@@ -1390,7 +1390,7 @@ public record OrderItemRequest(
 
 Use `@Valid` on the nested record or list so Spring validates inside it.
 
-#### Records With Compact Constructors
+### Records With Compact Constructors
 
 A compact constructor lets you add simple rules while keeping the record short.
 
@@ -1413,7 +1413,7 @@ public record Money(
 
 Use compact constructors for small invariants. For request validation, prefer Bean Validation annotations like `@NotBlank`, `@Min`, and `@Valid`.
 
-#### Records For Configuration Properties
+### Records For Configuration Properties
 
 Records work well with `@ConfigurationProperties`.
 
@@ -1434,7 +1434,7 @@ payment.timeout-seconds=5
 payment.retry-count=3
 ```
 
-#### Records With Jackson JSON
+### Records With Jackson JSON
 
 Jackson can serialize and deserialize records in Spring Boot.
 
@@ -1446,7 +1446,7 @@ public record UserJsonResponse(
 }
 ```
 
-#### Records For API Error Responses
+### Records For API Error Responses
 
 Records are good for consistent API error bodies.
 
@@ -1464,7 +1464,7 @@ public record FieldValidationError(
 }
 ```
 
-#### When To Use Records
+### When To Use Records
 
 Use records for:
 
@@ -1485,7 +1485,7 @@ Avoid records for:
 
 JPA entities should usually remain normal classes because JPA needs identity, lifecycle, proxies, and often a no-argument constructor.
 
-## 20. Pagination, Page-Based, Cursor-Based, And N+1 Problem
+## 21. Pagination, Page-Based, Cursor-Based, And N+1 Problem
 
 Pagination means returning a list in small parts instead of returning all rows at once.
 
@@ -1811,7 +1811,7 @@ N+1 prevention checklist:
 - Use `@EntityGraph`, fetch joins, or DTO projections.
 - Be careful with pagination plus `join fetch` on collections; prefer DTO projections or a two-step query for large paged lists.
 
-## 21. OpenAPI / Swagger
+## 22. OpenAPI / Swagger
 
 OpenAPI documents REST APIs in a standard JSON format. Swagger UI reads that OpenAPI document and gives you a browser page where you can inspect and test endpoints.
 
@@ -1935,7 +1935,7 @@ Useful OpenAPI annotations:
 - `@Tag`
 - `@Schema`
 
-## 22. Logging And Correlation IDs
+## 23. Logging And Correlation IDs
 
 For real APIs, use request IDs to trace logs.
 
@@ -1956,7 +1956,7 @@ public UserResponse getUser(
 }
 ```
 
-## 23. One Complete Mini Example
+## 24. One Complete Mini Example
 
 ```java
 package com.example.demo.user;
@@ -2085,7 +2085,7 @@ record FieldValidationError(
 }
 ```
 
-## 24. Memory Tips
+## 25. Memory Tips
 
 - `@SpringBootApplication` starts the app and scans components.
 - `@Configuration` plus `@Bean` manually creates beans.
